@@ -1,0 +1,42 @@
+{
+  "tasks": {
+    "run": "deno run --allow-read --allow-run --allow-write --allow-env --allow-net ./src/entry.ts -t=\"val extra test\" --y='value of y' --next-value-mu='this is our value'",
+    "dev": "deno task pre:compile; deno run --allow-read --allow-run ./src/deno_tasks/dev.ts --allow-read --allow-run --allow-write --allow-env --allow-net",
+    "test": "deno task pre:compile && deno test --allow-read --allow-run --allow-write --allow-env --allow-net --coverage=./.test_coverage ./src/**/*.test.ts -- --debug",
+    "test:coverage:lcov": "deno coverage ./.test_coverage --lcov > ./test-coverage.lcov",
+    "test:coverage:report": "deno run --allow-read --allow-env --allow-write --allow-run ./src/deno_tasks/test_coverage_report.ts -- --debug",
+    "generate:test:coverage:report:html":"genhtml -o ./.test_coverage_report ./test-coverage.lcov",
+    "pre:compile": "deno run --allow-run --allow-read --allow-write --allow-env --allow-net ./src/deno_tasks/pre_compile/pre_compile.ts -- --debug",
+    "compile": "deno task pre:compile && deno task compile:wpd && deno task compile:install",
+    "compile:wpd": "deno task compile:wpd:linux-x64 && deno task compile:wpd:macos-x64 && deno task compile:wpd:macos-arm",
+    "compile:wpd:linux-x64": "deno compile --allow-read --allow-run --allow-write --allow-env --allow-net --output dist/linux_x64/wpd --target x86_64-unknown-linux-gnu ./src/entry.ts",
+    "compile:wpd:macos-x64": "deno compile --allow-read --allow-run --allow-write --allow-env --allow-net --output dist/macos_x64/wpd --target x86_64-apple-darwin ./src/entry.ts",
+    "compile:wpd:macos-arm": "deno compile --allow-read --allow-run --allow-write --allow-env --allow-net --output dist/macos_arm/wpd --target aarch64-apple-darwin ./src/entry.ts",
+    "compile:install": "deno task compile:install:linux-x64 && deno task compile:install:macos-x64 && deno task compile:install:macos-arm",
+    "compile:install:linux-x64": "deno compile --allow-read --allow-run --allow-write --allow-env --allow-net --output dist/linux_x64/install --target x86_64-unknown-linux-gnu ./src/deno_tasks/install.ts",
+    "compile:install:macos-x64": "deno compile --allow-read --allow-run --allow-write --allow-env --allow-net --output dist/macos_x64/install --target x86_64-apple-darwin ./src/deno_tasks/install.ts",
+    "compile:install:macos-arm": "deno compile --allow-read --allow-run --allow-write --allow-env --allow-net --output dist/macos_arm/install --target aarch64-apple-darwin ./src/deno_tasks/install.ts",
+    "fmt": "deno fmt",
+    "lint": "deno lint"
+  },
+  "lint": {
+    "include": ["src/"],
+    "exclude": [],
+    "report": "pretty",
+    "rules": {
+      "tags": ["recommended"],
+      "include": [],
+      "exclude": []
+    }
+  },
+  "fmt": {
+    "useTabs": true,
+    "lineWidth": 100,
+    "indentWidth": 4,
+    "semiColons": true,
+    "singleQuote": true,
+    "proseWrap": "preserve",
+    "include": ["src/"],
+    "exclude": []
+  }
+}

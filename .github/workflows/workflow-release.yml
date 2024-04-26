@@ -1,0 +1,134 @@
+name: "create-release"
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  create-release:
+    permissions: write-all
+    runs-on: "ubuntu-22.04"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: "0"
+          fetch-tags: true
+
+      - name: Get latest release tag
+        id: get_latest_release_tag
+        run: |
+          _LATEST_RELEASE_TAG="$( ./.github/workflows/shell-scripts/get_latest_release_tag.sh "*.*.*" )"
+          _CURRENT_VERSION="${_LATEST_RELEASE_TAG}"
+
+          echo "tag=${_LATEST_RELEASE_TAG}" >> "$GITHUB_OUTPUT"
+          echo "version=${_CURRENT_VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Get new release commits range
+        id: get_new_release_commits_range
+        run: |
+          _RANGE="$( ./.github/workflows/shell-scripts/get_new_release_commits_range.sh "${{ steps.get_latest_release_tag.outputs.tag }}" "main" )"
+
+          IFS="," read -ra _START_STOP_RANGE <<< "${_RANGE}"
+
+          _START_COMMIT="${_START_STOP_RANGE[0]}"
+          _STOP_COMMIT="${_START_STOP_RANGE[1]}"
+
+          echo "range=${_RANGE}" >> "$GITHUB_OUTPUT"
+          echo "start=${_START_COMMIT}" >> "$GITHUB_OUTPUT"
+          echo "stop=${_STOP_COMMIT}" >> "$GITHUB_OUTPUT"
+
+      - name: Get next semantic version
+        id: get_next_semantic_version
+        run: |
+          echo "version=$( ./.github/workflows/shell-scripts/get_next_semantic_version.sh "${{ steps.get_latest_release_tag.outputs.version }}" "${{ steps.get_new_release_commits_range.outputs.start }}" "${{ steps.get_new_release_commits_range.outputs.stop }}" )" >> "$GITHUB_OUTPUT"
+
+      - name: Generate release note
+        id: generate_release_note
+        run: |
+          _FILE="$( realpath "./RELEASE_NOTE.md" )"
+
+          ./.github/workflows/shell-scripts/generate_release_note.sh "${_FILE}" "${{ steps.get_new_release_commits_range.outputs.start }}" "${{ steps.get_new_release_commits_range.outputs.stop }}"
+
+          echo "file=${_FILE}" >> "$GITHUB_OUTPUT"
+
+      - name: debug
+        if: always()
+        run: |
+          echo "Latest release tag '${{ steps.get_latest_release_tag.outputs.tag }}'"
+          echo "Latest release version '${{ steps.get_latest_release_tag.outputs.version }}'"
+          echo "New release range '${{ steps.get_new_release_commits_range.outputs.range }}'"
+          echo "New release range start '${{ steps.get_new_release_commits_range.outputs.start }}'"
+          echo "New release range stop '${{ steps.get_new_release_commits_range.outputs.stop }}'"
+          echo "New release version '${{ steps.get_next_semantic_version.outputs.version }}'"
+          echo "New release note file '${{ steps.generate_release_note.outputs.file }}'"
+
+          while IFS= read -r _LINE; do
+            echo "${_LINE}"
+          done < "${{ steps.generate_release_note.outputs.file }}"
+
+      - name: Create VERSION file
+        run: echo "${{ steps.get_next_semantic_version.outputs.version }}" > "VERSION"
+
+      - name: Create SECRET_KEY file
+        env:
+          SUPER_SECRET: ${{ secrets.SECRET_KEY }}
+        run: echo "$SUPER_SECRET" > "SECRET_KEY"
+
+      - name: Get deno version
+        id: get_deno_version
+        run: |
+          echo "dvm=$(cat .dvm)" >> "$GITHUB_OUTPUT"
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: "${{ steps.get_deno_version.outputs.dvm }}"
+
+      - name: Compile
+        run: "deno task compile"
+
+      - uses: vimtor/action-zip@v1
+        with:
+          files: dist/linux_x64/wpd
+          dest: linux_x64.zip
+
+      - uses: vimtor/action-zip@v1
+        with:
+          files: dist/macos_arm/wpd
+          dest: macos_arm.zip
+
+      - uses: vimtor/action-zip@v1
+        with:
+          files: dist/macos_x64/wpd
+          dest: macos_x64.zip
+
+      - uses: vimtor/action-zip@v1
+        with:
+          files: dist/linux_x64/install
+          dest: linux_x64-install.zip
+
+      - uses: vimtor/action-zip@v1
+        with:
+          files: dist/macos_arm/install
+          dest: macos_arm-install.zip
+
+      - uses: vimtor/action-zip@v1
+        with:
+          files: dist/macos_x64/install
+          dest: macos_x64-install.zip
+
+      - name: Create branch
+        uses: peterjgrainger/action-create-branch@v2.2.0
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          branch: "release/${{ steps.get_next_semantic_version.outputs.version }}"
+          sha: "${{ steps.get_new_release_commits_range.outputs.stop }}"
+
+      - name: Create release
+        uses: ncipollo/release-action@v1.13.0
+        with:
+          commit: "${{ steps.get_new_release_commits_range.outputs.stop }}"
+          tag: "${{ steps.get_next_semantic_version.outputs.version }}"
+          bodyFile: "${{ steps.generate_release_note.outputs.file }}"
+          artifacts: "linux_x64.zip,macos_arm.zip,macos_x64.zip,linux_x64-install.zip,macos_arm-install.zip,macos_x64-install.zip"

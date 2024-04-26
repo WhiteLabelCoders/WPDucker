@@ -1,0 +1,47 @@
+name: "test"
+
+on:
+  pull_request:
+
+jobs:
+  test-ubuntu:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: "0"
+          fetch-tags: true
+
+      - name: Get deno version
+        id: get_deno_version
+        run: |
+          echo "dvm=$(cat .dvm)" >> "$GITHUB_OUTPUT"
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: "${{ steps.get_deno_version.outputs.dvm }}"
+
+      - name: "test"
+        run: "deno task test"
+
+  test-macos:
+    runs-on: "macos-latest"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: "0"
+          fetch-tags: true
+
+      - name: Get deno version
+        id: get_deno_version
+        run: |
+          echo "dvm=$(cat .dvm)" >> "$GITHUB_OUTPUT"
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: "${{ steps.get_deno_version.outputs.dvm }}"
+
+      - name: "test"
+        run: "deno task test"

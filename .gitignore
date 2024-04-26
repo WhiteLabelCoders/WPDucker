@@ -1,0 +1,19 @@
+# distribution dir
+/dist
+
+# testing dir
+/test_*
+
+# test coverage dir
+/.test_coverage
+
+# test coverage report dir
+/.test_coverage_report
+
+# temporary dir
+/tmp
+
+# pre_compiled
+/src/pre_compiled
+/VERSION
+/SECRET_KEY
