@@ -84,6 +84,16 @@ jobs:
         with:
           deno-version: "${{ steps.get_deno_version.outputs.dvm }}"
 
+      - name: Create secret key
+        run: |
+          echo "${{ secrets.SECRET_KEY }}" > SECRET_KEY
+
+          if [[ "$(cat SECRET_KEY)" != "" ]]; then
+            echo "Correct secret key file!"
+          else
+            echo "INVALID secret key file!"
+          fi
+
       - name: Compile
         run: "deno task compile"
 
