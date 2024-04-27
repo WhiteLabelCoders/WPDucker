@@ -16,11 +16,11 @@ jobs:
       - name: Get deno version
         id: get_deno_version
         run: |
-          echo "dvm=$(cat .dvm)" >> "$GITHUB_OUTPUT"
+          echo "dvmrc=$(cat .dvmrc)" >> "$GITHUB_OUTPUT"
 
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: "${{ steps.get_deno_version.outputs.dvm }}"
+          deno-version: "${{ steps.get_deno_version.outputs.dvmrc }}"
 
       - name: "test"
         run: "deno task test"
@@ -37,11 +37,11 @@ jobs:
       - name: Get deno version
         id: get_deno_version
         run: |
-          echo "dvm=$(cat .dvm)" >> "$GITHUB_OUTPUT"
+          echo "dvmrc=$(cat .dvmrc)" >> "$GITHUB_OUTPUT"
 
       - uses: denoland/setup-deno@v1
         with:
-          deno-version: "${{ steps.get_deno_version.outputs.dvm }}"
+          deno-version: "${{ steps.get_deno_version.outputs.dvmrc }}"
 
       - name: "test"
         run: "deno task test"
