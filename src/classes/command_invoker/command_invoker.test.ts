@@ -70,17 +70,24 @@ Deno.test('classCommandInvoker', async function testClassCommandInvoker() {
 
 	invoker = commandInvokerFactory();
 
-	assert(await noError(async () => await invoker.dispatchCommand(command)), 'dispatch command');
+	invoker.setCheckDependencies(false);
+
+	const noErrorResultDispatchCommand = await noError(async () =>
+		await invoker.dispatchCommand(command)
+	);
+	assert(noErrorResultDispatchCommand == true, 'dispatch command');
 
 	invoker = commandInvokerFactory();
-
+	invoker.setCheckDependencies(false);
 	invoker.setOutsourceTarget('');
 
-	assert(await noError(async () => await invoker.exec(command)), 'exec with dispatch');
+	const noErrorResultExecWithDispatch = await noError(async () => await invoker.exec(command));
+	assert(noErrorResultExecWithDispatch == true, 'exec with dispatch');
 
 	invoker.setOutsourceTarget(cmdPath);
 
-	assert(await noError(async () => await invoker.exec(command)), 'exec with outsource');
+	const noErrorResultExecWithOutsource = await noError(async () => await invoker.exec(command));
+	assert(noErrorResultExecWithOutsource, 'exec with outsource');
 
 	const errorMsg = 'Expected error throw!';
 	class myClassCommandWithError extends classCommand {

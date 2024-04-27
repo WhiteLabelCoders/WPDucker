@@ -15,6 +15,6 @@ export const ensureExecutePermissions = (path: string) => {
 			`"${path}" is not executable! Upgrading permissions.`,
 		);
 
-		Deno.chmod(path, dispatchTargetMode | executePermission);
+		Deno.chmodSync(path, dispatchTargetMode | executePermission);
 	}
 };
