@@ -10,7 +10,7 @@ import { decompress } from 'https://deno.land/x/zip@v1.2.5/mod.ts';
 import { pathExist } from '../../utils/path_exist/path_exist.ts';
 import { version } from './cli_version_manager.d.ts';
 
-/* The `classCliVersionManager` class is a TypeScript class that represents the Unifo Version Manager, which is
+/* The `classCliVersionManager` class is a TypeScript class that represents the WPDucker Version Manager, which is
 responsible for managing the versions of the "wpd" software by downloading and extracting
 specific versions from GitHub releases. */
 export class classCliVersionManager {
@@ -163,7 +163,7 @@ export class classCliVersionManager {
 	}
 
 	/**
-	 * The `init` function initializes the Unifo Version Manager by resetting values, creating a
+	 * The `init` function initializes the WPDucker Version Manager by resetting values, creating a
 	 * directory, setting dispatch, and ensuring a required CLI version.
 	 * @param {version} [prefferedWpdVersion] - The `prefferedWpdVersion` parameter is an optional
 	 * input that specifies a preferred version of Wpd to be used during initialization. If provided,

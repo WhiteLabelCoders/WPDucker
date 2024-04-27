@@ -79,14 +79,14 @@ Deno.test('classCliVersionManager', async function testClassCliVersionManager() 
 
 	assert(
 		(await getError<string>(async () => {
-			await cliVersionManager.downloadVersion(`0.1.0`);
+			await cliVersionManager.downloadVersion(`0.0.1`);
 		})) === undefined,
 		'download version',
 	);
 
-	assert(await pathExist(`${testData.dir.cli.versions}/0.1.0/WPDucker`), 'verify download');
+	assert(await pathExist(`${testData.dir.cli.versions}/0.0.1/wpd`), 'verify download');
 
-	assert(await cliVersionManager.ensureVersion('0.1.0') === undefined, 'ensure version');
+	assert(await cliVersionManager.ensureVersion('0.0.1') === undefined, 'ensure version');
 
 	const useLatest = await getError<string>(async () => {
 		await cliVersionManager.useLatest();
