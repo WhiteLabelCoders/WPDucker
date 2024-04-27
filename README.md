@@ -30,7 +30,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## Author
 
-Project author: [Maciej Koralewski](https://github.com/MaciejKoralewski) <!-- Update the link to your GitHub profile if desired -->
+Project author: [Maciej Koralewski](https://github.com/MaciejKoralewski) 
 
 ## Current Project Status
 
