@@ -12,20 +12,26 @@ import { commandProjectInitDocs } from './init.docs.ts';
 const phrase = 'project init';
 class classCommandProjectInit extends classCommand {
 	constructor(args: TCommandArgs) {
-		logger.debug();
+		logger.debugFn(arguments);
 
 		super(args);
 	}
 
 	public async exec() {
-		logger.debug();
+		logger.debugFn(arguments);
 		const data = await this.getInputData();
 
 		await this.validateProjectDir(data.projectName);
 
-		await createProjectStructure(`${cwd()}/${data.projectName}`, CLI_PROJECT_STRUCTURE);
+		const newProjectPath = `${cwd()}/${data.projectName}`;
+
+		await createProjectStructure(newProjectPath, CLI_PROJECT_STRUCTURE);
 
 		logger.info(`Project initialized: "${cwd()}/${data.projectName}"`);
+
+		Deno.chdir(newProjectPath);
+
+		logger.info(`Moved to project directory: "${newProjectPath}"`);
 	}
 
 	public async getInputData() {
