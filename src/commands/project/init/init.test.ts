@@ -61,6 +61,7 @@ Deno.test('commandProjectInit', async function testCommandProjectInit(t) {
 				},
 			);
 			assert(await noError(async () => await command._exec()), 'Check command execution');
+			Deno.chdir(`${testDir}`);
 			assert(
 				isString(await getError<string>(async () => await command._exec())) === true,
 				'Check command execution Error',
