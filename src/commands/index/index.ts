@@ -6,12 +6,12 @@ import { commandDefaultDocs } from './index.docs.ts';
 const phrase = '';
 class classCommandDefault extends classCommand {
 	constructor(args: TCommandArgs) {
-		logger.debug();
+		logger.debugFn(arguments);
 
 		super(args);
 	}
 	public exec() {
-		logger.debug();
+		logger.debugFn(arguments);
 
 		this.displayDocumentation();
 	}
