@@ -40,3 +40,12 @@ const findTopLevelOfWpdProject = async (path: string) => {
 export const pwd = async () => {
 	return await findTopLevelOfWpdProject(cwd());
 };
+
+/**
+ * The function `getDirName` returns project name from the path.
+ * @returns The `getDirName` returns the last part of the path from path passed to that function.
+ */
+export function getDirName(path: string): string {
+	const parts = path.split('/');
+	return parts[parts.length - 1];
+}
