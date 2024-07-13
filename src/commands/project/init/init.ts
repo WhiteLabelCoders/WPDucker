@@ -19,11 +19,14 @@ class classCommandProjectInit extends classCommand {
 
 	public async exec() {
 		logger.debugFn(arguments);
+
 		const data = await this.getInputData();
+		logger.debugVar('data', data);
 
 		await this.validateProjectDir(data.projectName);
 
 		const newProjectPath = `${cwd()}/${data.projectName}`;
+		logger.debugVar('newProjectPath', newProjectPath);
 
 		await createProjectStructure(newProjectPath, CLI_PROJECT_STRUCTURE);
 
