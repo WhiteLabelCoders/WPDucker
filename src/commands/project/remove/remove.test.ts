@@ -11,90 +11,99 @@ import { CLI_PROJECT_STRUCTURE } from '../../../constants/CLI_PROJECT_STRUCTURE.
 import { pathExist } from '../../../utils/path_exist/path_exist.ts';
 
 Deno.test('commandProjectRemove', async function testCommandProjectRemove(t) {
-  const testDir = `${cwd()}/${await generateUniqueBasename({
-    basePath: cwd(),
-    prefix: `test_command_project_remove_`,
-  })}`;
+	const _cwd = cwd();
+	const testDir = `${_cwd}/${await generateUniqueBasename({
+		basePath: _cwd,
+		prefix: `test_command_project_remove_`,
+	})}`;
 
-  let error = undefined;
-  try {
-    const commandMeta = COMMANDS_META.find((item) => item.phrase === _commandMeta.phrase);
+	let error = undefined;
+	try {
+		const commandMeta = COMMANDS_META.find((item) => item.phrase === _commandMeta.phrase);
 
-    if (!commandMeta) {
-      throw `Cannot find command by phrase "${_commandMeta.phrase}"!`;
-    }
+		assert(!!commandMeta == true, 'Get command meta');
 
-    await t.step('Display help', async function testCommandRemoveHelp() {
-      const args: string[] = [
-        _commandMeta.phrase,
-        '-h',
-        '--help',
-        '--debug',
-      ];
-      const command = new commandMeta.class({
-        commandArgs: parseCliArgs(args),
-        documentation: commandMeta.documentation,
-      });
+		await t.step('Display help', async function testCommandRemoveHelp() {
+			const args: string[] = [
+				_commandMeta.phrase,
+				'-h',
+				'--help',
+				'--debug',
+			];
 
-      assert(await noError(async () => await command._exec()), 'Check command execution');
-    });
+			const command = new commandMeta.class({
+				commandArgs: parseCliArgs(args),
+				documentation: commandMeta.documentation,
+			});
 
-    await t.step('execution with force', async function testCommandRemoveWithForce() {
-      await createProjectStructure(testDir, CLI_PROJECT_STRUCTURE);
+			assert(
+				await noError(async () => await command._exec()),
+				'Check command help execution',
+			);
+		});
 
-      const args: string[] = [
-        _commandMeta.phrase,
-        '--debug',
-        '--force',
-      ];
+		await t.step('execution with force', async function testCommandRemoveWithForce() {
+			await createProjectStructure(testDir, CLI_PROJECT_STRUCTURE);
 
-      const command = new commandMeta.class(
-        {
-          commandArgs: parseCliArgs(args),
-          documentation: commandMeta.documentation,
-        },
-      );
+			const args: string[] = [
+				_commandMeta.phrase,
+				'--debug',
+				'--force',
+			];
 
-      Deno.chdir(testDir);
+			const command = new commandMeta.class(
+				{
+					commandArgs: parseCliArgs(args),
+					documentation: commandMeta.documentation,
+				},
+			);
 
-      assert(
-        await noError(async () => await command._exec()),
-        'Check command execution with force',
-      );
-      assert(await pathExist(testDir) === false, 'Project path still exists');
-    });
+			Deno.chdir(testDir);
 
-    await t.step('execution without force', async function testCommandRemoveWithoutForce() {
-      await createProjectStructure(testDir, CLI_PROJECT_STRUCTURE);
+			assert(
+				await noError(async () => await command._exec()),
+				'Check command execution with force',
+			);
+			assert(await pathExist(testDir) === false, 'Project path still exists');
+		});
 
-      const args: string[] = [
-        _commandMeta.phrase,
-        '--debug',
-      ];
-      const command = new commandMeta.class({
-        commandArgs: parseCliArgs(args),
-        documentation: commandMeta.documentation,
-      });
+		await t.step('execution without force', async function testCommandRemoveWithoutForce() {
+			await createProjectStructure(testDir, CLI_PROJECT_STRUCTURE);
 
-      const userInput = testDir;
-      command.askForArg.bind(command);
-      command.askForArg = (message: string, required: boolean, defaultValue?: string) => {
-        if (defaultValue) {
-          return defaultValue;
-        }
-        return userInput;
-      };
+			const args: string[] = [
+				_commandMeta.phrase,
+				'--debug',
+			];
+			const command = new commandMeta.class({
+				commandArgs: parseCliArgs(args),
+				documentation: commandMeta.documentation,
+			});
 
-      Deno.chdir(testDir);
+			const userInput = testDir;
+			command.askForArg.bind(command);
+			command.askForArg = (_message: string, _required: boolean, defaultValue?: string) => {
+				if (defaultValue) {
+					return defaultValue;
+				}
+				return userInput;
+			};
 
-      assert(await noError(async () => await command._exec()), 'Check command execution');
-      assert(await pathExist(testDir) === false, 'Project path still exists');
-    });
-  } catch (e) {
-    error = e;
-  }
+			Deno.chdir(testDir);
 
-  if (!isUndefined(error)) {
-    throw error;
-  }
+			assert(await noError(async () => await command._exec()), 'Check command execution');
+			assert(await pathExist(testDir) === false, 'Project path still exists');
+		});
+	} catch (e) {
+		error = e;
+	}
+
+	Deno.chdir(`${_cwd}`);
+
+	if (await pathExist(testDir)) {
+		await Deno.remove(testDir, { recursive: true });
+	}
+
+	if (!isUndefined(error)) {
+		throw error;
+	}
 });
