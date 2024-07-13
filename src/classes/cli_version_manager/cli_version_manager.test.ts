@@ -2,12 +2,12 @@ import { CLI_PVFB } from '../../constants/CLI_PVFB.ts';
 import createProjectStructure from '../../utils/create_project_structure/create_project_structure.ts';
 import { cwd } from '../../utils/cwd/cwd.ts';
 import { classCliVersionManager } from './cli_version_manager.ts';
-import { classDatabase } from '../database/database.ts';
 import { classGitHubApiClient } from '../github/gh_api_client.ts';
 import { getError } from '../../utils/get_error/get_error.ts';
 import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
 import { isBoolean, isObject } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
 import { pathExist } from '../../utils/path_exist/path_exist.ts';
+import { getDbForTests } from '../../utils/get_db_for_tests/get_db_for_tests.ts';
 
 Deno.test('classCliVersionManager', async function testClassCliVersionManager() {
 	const testDir = `${cwd()}/test_classCliVersionManager`;
@@ -26,9 +26,7 @@ Deno.test('classCliVersionManager', async function testClassCliVersionManager() 
 
 	await createProjectStructure(`${testData.dir.project}`);
 
-	const database = new classDatabase({ dirname: testData.dir.test });
-
-	await database.init('testName');
+	const database = await getDbForTests();
 
 	const gitHubApiClient = new classGitHubApiClient({
 		github: {

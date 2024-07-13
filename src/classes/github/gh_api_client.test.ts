@@ -1,19 +1,12 @@
 import { assertEquals } from 'https://deno.land/std@0.201.0/assert/assert_equals.ts';
 import { classGitHubApiClient } from './gh_api_client.ts';
 import { cwd } from '../../utils/cwd/cwd.ts';
-import { classDatabase } from '../database/database.ts';
+import { getDbForTests } from '../../utils/get_db_for_tests/get_db_for_tests.ts';
 
 Deno.test('classGitHubApiClient', async function testClassGitHubApiClient() {
 	const testDir = `${cwd()}/test_classGitHubApiClient`;
-	const testData = {
-		dir: {
-			test: `${testDir}`,
-		},
-	};
 
-	const database = new classDatabase({ dirname: testData.dir.test });
-
-	await database.init('testName');
+	const database = await getDbForTests();
 
 	const ghApi = new classGitHubApiClient({
 		github: {
