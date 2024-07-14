@@ -44,7 +44,10 @@ Deno.test('commandProjectInit', async function testCommandProjectInit(t) {
 				},
 			);
 
-			assert(await noError(async () => await command._exec()), 'Check command execution');
+			assert(
+				await noError(async () => await command._exec()),
+				'Check command help execution',
+			);
 		});
 
 		await t.step('execution', async function testCommandInitHelp() {

@@ -1,12 +1,12 @@
 import { logger } from '../../global/logger.ts';
 import { cwd } from '../../utils/cwd/cwd.ts';
+import { getDbForTests } from '../../utils/get_db_for_tests/get_db_for_tests.ts';
 import { parseCliArgs } from '../../utils/parser/parser.ts';
 import { classCliVersionManager } from '../cli_version_manager/cli_version_manager.ts';
 import { TCommandArgs } from '../command/command.d.ts';
 import { classCommand } from '../command/command.ts';
 import { classCommandInvoker } from '../command_invoker/command_invoker.ts';
 import { classCommandsRepository } from '../command_repository/command_repository.ts';
-import { classDatabase } from '../database/database.ts';
 import { classGitHubApiClient } from '../github/gh_api_client.ts';
 import { classCommandInvokerFacade } from './command_invoker_facade.ts';
 
@@ -27,7 +27,7 @@ Deno.test('classCommandInvokerFacade', async function testClassCommandInvokerFac
 
 	const tmpDir = testData.dir.cli.tmp;
 	const commandArguments = parseCliArgs(['./', '--debug']);
-	const database = new classDatabase({ dirname: testData.dir.cli.localStorage });
+	const database = await getDbForTests();
 	const gitHubApiClient = new classGitHubApiClient({
 		github: {
 			owner: 'WhiteLabelCoders',

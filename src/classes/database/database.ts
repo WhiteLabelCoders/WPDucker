@@ -8,6 +8,7 @@ export class classDatabase {
 	public databaseName = '';
 	public sessionId = '';
 	public localStorage;
+	public initialised = false;
 	constructor(args: { dirname: string }) {
 		logger.debugFn(arguments);
 
@@ -24,6 +25,13 @@ export class classDatabase {
 	 */
 	public async init(name: string) {
 		logger.debugFn(arguments);
+
+		if (this.initialised) {
+			logger.debug('Database is already initialised!');
+			return;
+		}
+
+		this.initialised = true;
 
 		await this.localStorage.init();
 

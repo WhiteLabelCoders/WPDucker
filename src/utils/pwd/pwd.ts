@@ -33,9 +33,11 @@ const findTopLevelOfWpdProject = async (path: string) => {
 };
 
 /**
- * The function `pwd` returns the top level directory of the Wpd project.
- * @returns The `pwd` function is returning the result of the `findTopLevelOfWpdProject` function
- * called with the current working directory (`cwd()`) as its argument.
+ * The function `pwd` in TypeScript returns the top level directory of a Wpd project by using the
+ * `findTopLevelOfWpdProject` function with the current working directory `cwd()`.
+ * @returns The `pwd` function is being exported as a constant. It is an asynchronous function that
+ * returns the top level directory of a WPD project by calling the `findTopLevelOfWpdProject` function
+ * with the current working directory obtained from `cwd()`.
  */
 export const pwd = async () => {
 	return await findTopLevelOfWpdProject(cwd());
