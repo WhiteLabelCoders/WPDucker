@@ -14,7 +14,39 @@ const pathExist = (path: string) => {
 	}
 };
 
-const dispatchEvent = _.debounce((event: Deno.FsEvent) => {
+const runTestFile = async (filename: string) => {
+	const preCmd = new Deno.Command(Deno.execPath(), {
+		args: ['task', 'pre:compile'],
+	});
+
+	const cmd = new Deno.Command(Deno.execPath(), {
+		args: ['test', ...Deno.args, filename, '--', '--debug'],
+	});
+
+	preCmd.outputSync();
+
+	const process = cmd.spawn();
+
+	await process.status;
+};
+
+const runDefinitionFile = async (filename: string) => {
+	const preCmd = new Deno.Command(Deno.execPath(), {
+		args: ['task', 'pre:compile'],
+	});
+
+	const cmd = new Deno.Command(Deno.execPath(), {
+		args: ['run', ...Deno.args, filename, '--', '--debug'],
+	});
+
+	preCmd.outputSync();
+
+	const process = cmd.spawn();
+
+	await process.status;
+};
+
+const dispatchEvent = _.debounce(async (event: Deno.FsEvent) => {
 	for (const path of event.paths) {
 		const pathSegments = path.split('/');
 		const dirname = pathSegments.slice(0, pathSegments.length - 1).join('/');
@@ -24,29 +56,22 @@ const dispatchEvent = _.debounce((event: Deno.FsEvent) => {
 			continue;
 		}
 
-		const runFilename = `${dirname}/${basename.split('.').at(0)}.test.ts`;
+		const testFile = `${dirname}/${basename.split('.').at(0)}.test.ts`;
+		const definitionFile = `${dirname}/${basename.split('.').at(0)}.ts`;
 
-		if (!pathExist(runFilename)) {
+		if (pathExist(testFile)) {
 			console.clear();
-			console.error(`File doesn't exist!`, runFilename);
-			continue;
+			console.error(`Run test file!`, testFile);
+			await runTestFile(testFile);
+		} else {
+			console.clear();
+			console.error(`Test file doesn't exist!`, testFile);
+			console.error(`Run definition file!`, definitionFile);
+			await runDefinitionFile(definitionFile);
 		}
-
-		const preCmd = new Deno.Command(Deno.execPath(), {
-			args: ['task', 'pre:compile'],
-		});
-
-		const cmd = new Deno.Command(Deno.execPath(), {
-			args: ['test', ...Deno.args, runFilename, '--', '--debug'],
-		});
-
-		console.clear();
-
-		preCmd.outputSync();
-		cmd.spawn();
 	}
 }, delay);
 
 for await (const event of watcher) {
-	dispatchEvent(event);
+	await dispatchEvent(event);
 }
