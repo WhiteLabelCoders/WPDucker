@@ -1,0 +1,34 @@
+name: "copyrights"
+
+on:
+  pull_request:
+
+jobs:
+  update-copyrights:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: "0"
+          fetch-tags: true
+
+      - name: Get deno version
+        id: get_deno_version
+        run: |
+          echo "dvmrc=$(cat .dvmrc)" >> "$GITHUB_OUTPUT"
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: "${{ steps.get_deno_version.outputs.dvmrc }}"
+
+      - name: "update"
+        run: "deno task copyrights"
+      
+      - name: "commit"
+        run: |
+          git add .
+          git commit -m "fix: update copyrights"
+          git push
+        
+
