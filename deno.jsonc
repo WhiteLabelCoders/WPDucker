@@ -1,6 +1,6 @@
 {
 	"tasks": {
-		"setup": "deno run -A ./src/deno_tasks/setup.ts",
+		"setup": "deno run --allow-run --allow-read --allow-write ./src/deno_tasks/setup.ts",
 		"run": "deno run --allow-read --allow-run --allow-write --allow-env --allow-net ./src/entry.ts -t=\"val extra test\" --y='value of y' --next-value-mu='this is our value'",
 		"dev": "deno task pre:compile; deno run --allow-read --allow-run ./src/deno_tasks/dev.ts --allow-read --allow-run --allow-write --allow-env --allow-net",
 		"test": "deno task pre:compile && deno test --allow-read --allow-run --allow-write --allow-env --allow-net --coverage=./.test_coverage ./src/**/*.test.ts -- --debug",
