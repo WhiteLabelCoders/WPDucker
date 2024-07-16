@@ -25,11 +25,13 @@ jobs:
       - name: Update
         run: "deno task copyrights"
       
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
       - name: Push changes
         run: |
-          git config --global user.name 'WhiteLabelCoders'
-          git config --global user.email 'github@whitelabelcoders.com'
-
           git add .
           git commit -m "fix: update copyrights"
           git push
