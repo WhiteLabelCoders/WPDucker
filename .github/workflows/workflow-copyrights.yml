@@ -1,7 +1,7 @@
 name: "copyrights"
 
 on:
-  pull_request:
+  push:
 
 jobs:
   update-copyrights:
@@ -22,10 +22,15 @@ jobs:
         with:
           deno-version: "${{ steps.get_deno_version.outputs.dvmrc }}"
 
-      - name: "update"
+      - name: Update
         run: "deno task copyrights"
       
-      - name: "commit"
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Push changes
         run: |
           git add .
           git commit -m "fix: update copyrights"
