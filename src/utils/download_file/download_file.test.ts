@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { assertEquals } from 'https://deno.land/std@0.201.0/assert/assert_equals.ts';
 import { downloadFile } from './download_file.ts';
 import { generateUniqueBasename } from '../generate_unique_basename/generate_unique_basename.ts';

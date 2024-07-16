@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { isArray } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
 import { logger } from '../../global/logger.ts';
 import { ensureExecutePermissions } from '../../utils/path/ensure_execute_permissions.ts';

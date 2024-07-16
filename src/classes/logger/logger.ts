@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { ansiColors } from './colors.ts';
 import { getCallingFunctionName } from '../../utils/calling_function_name/calling_function_name.ts';
 import { formatDate } from '../../utils/format_date/format_date.ts';

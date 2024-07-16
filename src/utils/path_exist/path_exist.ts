@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 /**
  * The function `pathExist` checks if a given path exists.
  * @param {string} path - The `path` parameter is a string that represents the file or directory path

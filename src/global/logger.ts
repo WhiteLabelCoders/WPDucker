@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { classLogger } from '../classes/logger/logger.ts';
 
 /* The code is creating a new instance of the `classLogger` class and assigning it to the `logger`

@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { parseCliArgs } from '../../utils/parser/parser.ts';
 import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
 import { noError } from '../../utils/no_error/no_error.ts';

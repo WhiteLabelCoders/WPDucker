@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { logger } from '../../global/logger.ts';
 import { TCommandMeta } from '../command/command.d.ts';
 import { classCommand } from '../command/command.ts';

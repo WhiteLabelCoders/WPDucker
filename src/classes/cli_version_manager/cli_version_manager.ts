@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { CLI_DIR } from '../../constants/CLI_DIR.ts';
 import { logger } from '../../global/logger.ts';
 import { getOsAlias } from '../../utils/get_od_alias/get_os_alias.ts';

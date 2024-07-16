@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { classCliVersionManager } from './classes/cli_version_manager/cli_version_manager.ts';
 import { classCommandInvoker } from './classes/command_invoker/command_invoker.ts';
 import { classCommandsRepository } from './classes/command_repository/command_repository.ts';

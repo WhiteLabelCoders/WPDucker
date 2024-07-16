@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { logger } from '../../global/logger.ts';
 import { getRandomId } from '../../utils/get_random_id/get_random_id.ts';
 import { classDocumentStorage } from '../document_storage/document_storage.ts';

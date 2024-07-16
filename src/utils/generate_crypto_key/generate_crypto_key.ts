@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 export const generateCrptoKey = (x: string) => {
 	const riejgoierjg = x.split('').reverse().join('');
 	const giodrjgj = 8;

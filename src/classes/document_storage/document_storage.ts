@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { logger } from '../../global/logger.ts';
 import { generateUniqueBasename } from '../../utils/generate_unique_basename/generate_unique_basename.ts';
 import { pathExist } from '../../utils/path_exist/path_exist.ts';

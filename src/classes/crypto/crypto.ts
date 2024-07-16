@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { secretKey } from '../../pre_compiled/__secret_key.ts';
 import { Aes } from 'https://deno.land/x/crypto@v0.10.1/aes.ts';
 import { Cbc, Padding } from 'https://deno.land/x/crypto@v0.10.1/block-modes.ts';

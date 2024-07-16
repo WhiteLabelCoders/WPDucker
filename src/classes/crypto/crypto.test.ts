@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
 import { classCrypto } from './crypto.ts';
 

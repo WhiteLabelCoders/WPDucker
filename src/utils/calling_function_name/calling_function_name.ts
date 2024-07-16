@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 /**
  * The function `getCallingFunctionName` retrieves the name of the calling function in TypeScript.
  * @param [offset=4] - The `offset` parameter is used to determine the position in the call stack to

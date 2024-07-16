@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { classCliVersionManager } from '../classes/cli_version_manager/cli_version_manager.ts';
 import { classDatabase } from '../classes/database/database.ts';
 import classDependencyChecker from '../classes/dependency_checker/dependency_checker.ts';

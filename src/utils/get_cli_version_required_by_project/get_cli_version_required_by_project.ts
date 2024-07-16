@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { version } from '../../classes/cli_version_manager/cli_version_manager.d.ts';
 import { CLI_PVFB } from '../../constants/CLI_PVFB.ts';
 import { pwd } from '../pwd/pwd.ts';

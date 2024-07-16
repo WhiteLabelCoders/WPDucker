@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { logger } from '../../global/logger.ts';
 import { classDatabase } from '../database/database.ts';
 import { IReleaseByTagName } from './release_by_tag_name.d.ts';

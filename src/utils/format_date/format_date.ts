@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 /**
  * The `formatDate` function takes a `Date` object and returns a formatted string in the format
  * "YYYY-MM-DD HH:MM:SS.SSS".

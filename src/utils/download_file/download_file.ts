@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { pathExist } from '../path_exist/path_exist.ts';
 import { logger } from '../../global/logger.ts';
 

@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { isArray } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
 import { ansiColors } from '../classes/logger/colors.ts';
 

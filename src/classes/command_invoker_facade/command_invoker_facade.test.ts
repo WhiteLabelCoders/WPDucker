@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { logger } from '../../global/logger.ts';
 import { cwd } from '../../utils/cwd/cwd.ts';
 import { getDbForTests } from '../../utils/get_db_for_tests/get_db_for_tests.ts';

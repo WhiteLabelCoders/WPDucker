@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { CLI_PVFB } from '../../constants/CLI_PVFB.ts';
 import createProjectStructure from '../../utils/create_project_structure/create_project_structure.ts';
 import { cwd } from '../../utils/cwd/cwd.ts';

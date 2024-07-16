@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { DOCUMENTATION_COLOR_THEME } from '../../constants/DOCUMENTATION_COLOR_THEME.ts';
 import { generateDocumentation } from '../../utils/generate_documentation.ts';
 import commandProjectInitMeta from '../project/init/init.ts';

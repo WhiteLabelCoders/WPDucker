@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { COMMANDS_META } from '../../pre_compiled/__commands_meta.ts';
 import { logger } from '../../global/logger.ts';
 import { isUndefined } from 'https://cdn.skypack.dev/lodash-es@4.17.21';

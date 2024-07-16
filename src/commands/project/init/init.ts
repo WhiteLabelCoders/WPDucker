@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { TCommandArgs, TCommandMeta } from '../../../classes/command/command.d.ts';
 import { classCommand } from '../../../classes/command/command.ts';
 import { CLI_PROJECT_NAME_PREFIX } from '../../../constants/CLI_PROJECT_NAME_PREFIX.ts';

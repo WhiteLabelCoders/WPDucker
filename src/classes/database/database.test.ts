@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { assertEquals } from 'https://deno.land/std@0.201.0/assert/assert_equals.ts';
 import { getError } from '../../utils/get_error/get_error.ts';
 import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
