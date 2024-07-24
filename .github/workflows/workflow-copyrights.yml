@@ -32,8 +32,10 @@ jobs:
 
       - name: Push changes
         run: |
-          git add .
-          git commit -m "fix: update copyrights"
-          git push
+          if [[ ! -z "$(git status --porcelain)" ]]; then
+            git add .
+            git commit -m "fix: update copyrights"
+            git push
+          fi
         
 
