@@ -1,7 +1,7 @@
 // Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
 import { DOCUMENTATION_COLOR_THEME } from '../../../constants/DOCUMENTATION_COLOR_THEME.ts';
-import { generateDocumentation } from '../../../utils/generate_documentation.ts';
+import { generateDocumentation } from '../../../utils/generate_documentation/generate_documentation.ts';
 
 const feedOptions: [string | string[], string][] = [
   [['-f', '--force'], 'Force execution'],
