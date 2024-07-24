@@ -5,11 +5,9 @@ import { classCommand } from '../../../classes/command/command.ts';
 import { logger } from '../../../global/logger.ts';
 import { cwd } from '../../../utils/cwd/cwd.ts';
 import { pathExist } from '../../../utils/path_exist/path_exist.ts';
-import { pwd } from '../../../utils/pwd/pwd.ts';
 import { commandProjectEnvAddDocs } from './env-add.docs.ts';
 
 const phrase = 'project env add';
-const ENV_NAME_REGEX = /^[A-Za-z0-9-_]+$/;
 
 class classCommandProjectEnvAdd extends classCommand {
 	constructor(args: TCommandArgs) {
@@ -21,12 +19,7 @@ class classCommandProjectEnvAdd extends classCommand {
 	public async exec() {
 		logger.debugFn(arguments);
 
-		const currentPwd = await pwd();
-
-		if (!currentPwd) {
-			logger.info('Operation cancelled. Not a WPD directory!');
-			return;
-		}
+		this.onlyInsideProject();
 
 		const data = await this.getInputData();
 
@@ -46,20 +39,14 @@ class classCommandProjectEnvAdd extends classCommand {
 		logger.info(`Environment "${data.envName}" added at "${envFilePath}"`);
 	}
 
-	public async getInputData() {
+	public getInputData() {
 		return {
-			envName: this.getOrAskForArg(
-				'env-name',
-				'Enter environment name (only A-z 0-9 - _ are allowed):',
-				false,
-			),
+			envName: this.getOrAskForArg({
+				name: 'env-name',
+				askMessage: 'Enter environment name (only A-z 0-9 - _ are allowed):',
+				required: false,
+			}),
 		};
-	}
-
-	public validateEnvName(envName: string) {
-		if (!ENV_NAME_REGEX.test(envName)) {
-			throw `Invalid environment name "${envName}". Only A-z 0-9 - _ are allowed.`;
-		}
 	}
 }
 

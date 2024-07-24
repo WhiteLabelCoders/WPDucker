@@ -41,15 +41,15 @@ class classCommandProjectInit extends classCommand {
 
 	public async getInputData() {
 		return {
-			projectName: this.getOrAskForArg(
-				'project-name',
-				'Enter project name:',
-				false,
-				await generateUniqueBasename({
+			projectName: this.getOrAskForArg({
+				name: 'project-name',
+				askMessage: 'Enter project name:',
+				required: false,
+				defaultValue: await generateUniqueBasename({
 					basePath: cwd(),
 					prefix: `${CLI_PROJECT_NAME_PREFIX}-`,
 				}),
-			),
+			}),
 		};
 	}
 

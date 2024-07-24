@@ -4,7 +4,7 @@ import { TCommandArgs } from './command.d.ts';
 import { logger } from '../../global/logger.ts';
 import { getCurrentCliVersion } from '../../utils/get_current_cli_version/get_current_cli_version.ts';
 import { emojify } from '../../utils/emojify/emojify.ts';
-import { isUndefined, random } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
+import { lodash as _ } from 'https://deno.land/x/deno_ts_lodash@0.0.1/mod.ts';
 import { pwd } from '../../utils/pwd/pwd.ts';
 
 export abstract class classCommand {
@@ -147,7 +147,7 @@ export abstract class classCommand {
 	public getRandomMessageFrom(feed: string[]) {
 		logger.debugFn(arguments);
 
-		const randomMessage = `${this.getCliBrandEmoji()} ${feed[random(0, feed.length - 1)]}`;
+		const randomMessage = `${this.getCliBrandEmoji()} ${feed[_.random(0, feed.length - 1)]}`;
 		logger.debugVar('randomMessage', randomMessage);
 
 		return randomMessage;
@@ -271,56 +271,57 @@ export abstract class classCommand {
 	}
 
 	/**
-	 * This function retrieves a specified argument value or prompts the user to provide it if not found.
-	 * @param {string} name - The `name` parameter is a string that represents the name of the argument
-	 * you are trying to retrieve or ask for.
-	 * @param {string} askMessage - The `askMessage` parameter is a string that represents the message or
-	 * prompt that will be displayed to the user when asking for the value of the argument named `name`.
-	 * It serves as a way to communicate to the user what information is needed from them.
-	 * @param {boolean} [required=false] - The `required` parameter in the `getOrAskForArg` function
-	 * indicates whether the argument is mandatory or not. If `required` is set to `true`, it means that
-	 * the argument must be provided by the user. If it is set to `false` (which is the default value
-	 * @param [defaultValue] - The `defaultValue` parameter in the `getOrAskForArg` function is used to
-	 * provide a default value that will be returned if the argument with the specified `name` is not
-	 * found or is `undefined`. If a default value is not provided, an empty string `''` will be used
-	 * @returns The `getOrAskForArg` function returns the value of the argument with the specified name if
-	 * it exists, otherwise it prompts the user with the provided message to input the value. If the value
-	 * is not provided by the user and a default value is specified, the default value is returned.
+	 * This function retrieves a command line argument or prompts the user for input if the argument is
+	 * not provided or does not pass validation.
+	 * @param args - The `getOrAskForArg` function takes in an object `args` with the following
+	 * properties:
+	 * @returns The `getOrAskForArg` function returns the value of the argument if it passes validation,
+	 * otherwise it prompts the user to provide the argument by calling the `askForArg` function with the
+	 * specified parameters.
 	 */
-	public getOrAskForArg(
-		name: string,
-		askMessage: string,
-		required: boolean = false,
-		defaultValue = '',
-	) {
+	public getOrAskForArg(args: {
+		name: string;
+		askMessage: string;
+		required?: boolean;
+		defaultValue?: string;
+		validator?: (value: string) => true | string;
+	}) {
 		logger.debugFn(arguments);
+		const { name, askMessage: message, required = false, defaultValue = '', validator } = args;
 
 		const value = this.args.getKV([name])?.[0]?.[1];
 		logger.debugVar('value', value);
+		const validation = validator ? validator(value) : undefined;
+		logger.debugVar('validation', validation);
 
-		if (!isUndefined(value)) {
+		if (!_.isUndefined(value) && !_.isString(validation)) {
 			return value;
 		}
 
-		return this.askForArg(askMessage, required, defaultValue);
+		logger.error(validation);
+
+		return this.askForArg({ message, required, defaultValue, validator });
 	}
 
 	/**
-	 * The function `askForArg` prompts the user for input with an optional default value and handles
-	 * required input.
-	 * @param {string} message - The `message` parameter is a string that represents the prompt message
-	 * displayed to the user when asking for input.
-	 * @param {boolean} [required=false] - The `required` parameter in the `askForArg` function is a
-	 * boolean flag that indicates whether the argument is required or not. If `required` is set to
-	 * `true`, it means that the user must provide a value for the argument. If it is set to `false`, the
-	 * argument
-	 * @param {string} defaultValue - The `defaultValue` parameter in the `askForArg` function is used to
-	 * provide a default value that will be used if the user does not provide any input when prompted.
-	 * @returns The `askForArg` function returns the user's input value after prompting for a message. If
-	 * the input is required, it will keep prompting the user until a non-empty value is provided.
+	 * The function `askForArg` prompts the user for input based on specified arguments, including
+	 * message, required flag, default value, and optional validation function.
+	 * @param args - The `askForArg` function takes in an object `args` with the following properties:
+	 * @returns The `askForArg` function returns the user's answer after validating it based on the
+	 * provided arguments. If the answer is required and passes validation, it will return the user's
+	 * input. If the answer is not required and passes validation, it will return the user's input. If the
+	 * answer is required but fails validation, it will keep prompting the user until a valid input is
+	 * provided.
 	 */
-	public askForArg(message: string, required: boolean = false, defaultValue: string) {
+	public askForArg(args: {
+		message: string;
+		required: boolean;
+		defaultValue: string;
+		validator?: (value: string) => true | string;
+	}) {
 		logger.debugFn(arguments);
+
+		const { message, required = false, defaultValue, validator } = args;
 
 		const _prompt = () =>
 			prompt(
@@ -329,18 +330,24 @@ export abstract class classCommand {
 				}${message}`,
 			) || defaultValue;
 
-		if (required == false) {
-			const promptValue = _prompt();
-			logger.debugVar('promptValue', promptValue);
+		let userAnswer = _prompt();
+		logger.debugVar('userAnswer', userAnswer);
 
-			return promptValue;
+		let validation = validator ? validator(userAnswer) : undefined;
+		logger.debugVar('validation', validation);
+
+		if (required == false && !_.isString(validation)) {
+			return userAnswer;
 		}
 
-		let userAnswer = '';
-		logger.debugVar('userAnswer', userAnswer);
-		while (!userAnswer) {
+		while (!userAnswer || _.isString(validation)) {
 			userAnswer = _prompt() || '';
 			logger.debugVar('userAnswer', userAnswer);
+
+			validation = validator ? validator(userAnswer) : undefined;
+			logger.debugVar('validation', validation);
+
+			logger.error(validation);
 		}
 
 		return userAnswer;
@@ -353,14 +360,50 @@ export abstract class classCommand {
 	 * code.
 	 */
 	public async onlyInsideProject() {
+		logger.debugFn(arguments);
+
 		const _pwd = await pwd();
 		logger.debugVar('_pwd', _pwd);
 
 		if (!_pwd) {
-			logger.error(
-				`Operation cancelled! The command "${this.getPhrase()}" can only be executed within the scope of the WPD project.`,
-			);
-			return;
+			throw `Operation cancelled! The command "${this.getPhrase()}" can only be executed within the scope of the WPD project.`;
+		}
+	}
+
+	/**
+	 * This TypeScript function retrieves the current working directory path asynchronously and throws an
+	 * error if it is incorrect.
+	 * @returns The `getPwd` function is returning the current working directory path.
+	 */
+	public async getPwd() {
+		logger.debugFn(arguments);
+
+		const currentPwd = await pwd();
+		logger.debugVar('currentPwd', currentPwd);
+
+		if (!currentPwd) {
+			throw `Incorrect project workdir "${currentPwd}"!`;
+		}
+
+		return currentPwd;
+	}
+
+	/**
+	 * The function `validateEnvName` checks if the provided environment name contains only alphanumeric
+	 * characters, hyphens, and underscores.
+	 * @param {string} envName - The `envName` parameter is a string that represents the name of an
+	 * environment. The `validateEnvName` function is used to check if the `envName` follows a specific
+	 * pattern defined by the regular expression `^[A-Za-z0-9-_]+$`. This pattern allows only alphanumeric
+	 * characters
+	 */
+	public validateEnvName(envName: string) {
+		logger.debugFn(arguments);
+
+		const ENV_NAME_REGEX = /^[A-Za-z0-9-_]+$/;
+		logger.debugVar('ENV_NAME_REGEX', ENV_NAME_REGEX);
+
+		if (!ENV_NAME_REGEX.test(envName)) {
+			throw `Invalid environment name "${envName}". Only A-z 0-9 - _ are allowed!`;
 		}
 	}
 

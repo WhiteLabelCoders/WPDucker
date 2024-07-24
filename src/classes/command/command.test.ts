@@ -56,16 +56,29 @@ Deno.test('classCommand', async function testClassCommand(t) {
 			documentation: testCommandDocs,
 		});
 
-		assert(command.getOrAskForArg(argName, askForArgMessage) == argVal, 'test arg value');
+		assert(
+			command.getOrAskForArg({ name: argName, askMessage: askForArgMessage }) == argVal,
+			'test arg value',
+		);
 		const promptStub = stub(
 			globalThis,
 			'prompt',
 			returnsNext([argVal2, argVal3, argVal3, argVal3, null, argVal2]),
 		);
-		assert(command.getOrAskForArg(argName2, askForArgMessage) == argVal2, 'prompt asking');
-		assert(command.getOrAskForArg(argName2, askForArgMessage) == argVal3, 'prompt empty');
 		assert(
-			command.getOrAskForArg(argName2, askForArgMessage, true) == argVal2,
+			command.getOrAskForArg({ name: argName2, askMessage: askForArgMessage }) == argVal2,
+			'prompt asking',
+		);
+		assert(
+			command.getOrAskForArg({ name: argName2, askMessage: askForArgMessage }) == argVal3,
+			'prompt empty',
+		);
+		assert(
+			command.getOrAskForArg({
+				name: argName2,
+				askMessage: askForArgMessage,
+				required: true,
+			}) == argVal2,
 			'prompt required argument',
 		);
 		promptStub.restore();
