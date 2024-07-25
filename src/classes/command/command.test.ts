@@ -41,7 +41,7 @@ Deno.test('classCommand', async function testClassCommand(t) {
 		assert(await noError(() => command._exec()), 'Command just exec');
 	});
 
-	await t.step(function testClassCommandGetOrAskForArgument() {
+	await t.step(async function testClassCommandGetOrAskForArgument() {
 		const argName = 'my-argument-custom';
 		const argName2 = 'my-argument-custom2';
 		const argVal = 'my custom value!';
@@ -57,7 +57,7 @@ Deno.test('classCommand', async function testClassCommand(t) {
 		});
 
 		assert(
-			command.getOrAskForArg({ name: argName, askMessage: askForArgMessage }) == argVal,
+			await command.getOrAskForArg({ name: argName, askMessage: askForArgMessage }) == argVal,
 			'test arg value',
 		);
 		const promptStub = stub(
@@ -66,15 +66,17 @@ Deno.test('classCommand', async function testClassCommand(t) {
 			returnsNext([argVal2, argVal3, argVal3, argVal3, null, argVal2]),
 		);
 		assert(
-			command.getOrAskForArg({ name: argName2, askMessage: askForArgMessage }) == argVal2,
+			await command.getOrAskForArg({ name: argName2, askMessage: askForArgMessage }) ==
+				argVal2,
 			'prompt asking',
 		);
 		assert(
-			command.getOrAskForArg({ name: argName2, askMessage: askForArgMessage }) == argVal3,
+			await command.getOrAskForArg({ name: argName2, askMessage: askForArgMessage }) ==
+				argVal3,
 			'prompt empty',
 		);
 		assert(
-			command.getOrAskForArg({
+			await command.getOrAskForArg({
 				name: argName2,
 				askMessage: askForArgMessage,
 				required: true,

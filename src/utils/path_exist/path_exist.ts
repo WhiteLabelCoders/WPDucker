@@ -1,11 +1,11 @@
 // Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
 /**
- * The function `pathExist` checks if a given path exists.
- * @param {string} path - The `path` parameter is a string that represents the file or directory path
- * that you want to check for existence.
- * @returns The function `pathExist` returns a boolean value. It returns `true` if the path exists and
- * `false` if the path does not exist.
+ * Check if a path exists.
+ *
+ * @param path - The path to check.
+ *
+ * @returns True if the path exists.
  */
 export const pathExist = async (path: string) => {
 	try {

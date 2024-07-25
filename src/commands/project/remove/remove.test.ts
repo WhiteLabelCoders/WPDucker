@@ -83,7 +83,7 @@ Deno.test('commandProjectRemove', async function testCommandProjectRemove(t) {
 
 			const userInput = testDir;
 			command.askForArg.bind(command);
-			command.askForArg = (args: {
+			command.askForArg = async (args: {
 				message: string;
 				required: boolean;
 				defaultValue: string;

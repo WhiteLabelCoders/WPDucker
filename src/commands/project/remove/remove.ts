@@ -17,7 +17,7 @@ class classCommandProjectRemove extends classCommand {
 	public async exec() {
 		logger.debugFn(arguments);
 
-		this.onlyInsideProject();
+		await this.onlyInsideProject();
 
 		const currentPwd = await this.getPwd();
 		logger.debugVar('currentPwd', currentPwd);
@@ -33,7 +33,7 @@ class classCommandProjectRemove extends classCommand {
 				`Are you sure you want to remove the project "${projectName}"? This action cannot be undone. Please type the project name: `;
 			logger.debugVar('confirmationMessage', confirmationMessage);
 
-			const userInput = this.askForArg({
+			const userInput = await this.askForArg({
 				message: confirmationMessage,
 				required: false,
 				defaultValue: projectName,

@@ -3,8 +3,9 @@
 import { TCommandArgs, TCommandMeta } from '../../../classes/command/command.d.ts';
 import { classCommand } from '../../../classes/command/command.ts';
 import { logger } from '../../../global/logger.ts';
-import { cwd } from '../../../utils/cwd/cwd.ts';
+import { generateUniqueBasename } from '../../../utils/generate_unique_basename/generate_unique_basename.ts';
 import { pathExist } from '../../../utils/path_exist/path_exist.ts';
+import { pwd } from '../../../utils/pwd/pwd.ts';
 import { commandProjectEnvAddDocs } from './env-add.docs.ts';
 
 const phrase = 'project env add';
@@ -19,32 +20,43 @@ class classCommandProjectEnvAdd extends classCommand {
 	public async exec() {
 		logger.debugFn(arguments);
 
-		this.onlyInsideProject();
+		await this.onlyInsideProject();
 
 		const data = await this.getInputData();
+		logger.debugVar('data', data);
 
-		// Validate environment name
-		this.validateEnvName(data.envName);
+		const envDir = `${await pwd()}/wpd/environments/${data.envName}`;
+		logger.debugVar('envDir', envDir);
 
-		const envFilePath = `${cwd()}/env/${data.envName}.env`;
+		logger.info('Creating environment directory...');
+		await Deno.mkdir(envDir, { recursive: true });
 
-		// Check if environment file already exists
-		if (await pathExist(envFilePath)) {
-			throw `Environment "${data.envName}" already exists!`;
-		}
+		const envConfigFile = `${envDir}/config.json`;
+		logger.debugVar('envConfigFile', envConfigFile);
 
-		// Create environment file (this is just a placeholder for actual file creation logic)
-		await Deno.writeTextFile(envFilePath, '');
-
-		logger.info(`Environment "${data.envName}" added at "${envFilePath}"`);
+		logger.info('Creating environment config file...');
+		await Deno.writeTextFile(envConfigFile, JSON.stringify({}));
 	}
 
-	public getInputData() {
+	public async getInputData() {
+		const validator = async (value: string) => {
+			if (await pathExist(`${await pwd()}/wpd/environments/${value}`)) {
+				return `Environment '${value}' already exist!`;
+			}
+
+			return this.validateEnvName(value);
+		};
+
 		return {
-			envName: this.getOrAskForArg({
+			envName: await this.getOrAskForArg({
 				name: 'env-name',
 				askMessage: 'Enter environment name (only A-z 0-9 - _ are allowed):',
 				required: false,
+				defaultValue: await generateUniqueBasename({
+					prefix: 'my-env',
+					basePath: `${await pwd()}/wpd/environments`,
+				}),
+				validator,
 			}),
 		};
 	}

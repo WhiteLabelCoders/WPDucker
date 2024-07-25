@@ -283,19 +283,19 @@ export abstract class classCommand {
 	 * @param args.validator - (Optional) A function to validate the argument value. Should return true if the value is valid, or a string with an error message otherwise.
 	 * @returns The value of the argument.
 	 */
-	public getOrAskForArg(args: {
+	public async getOrAskForArg(args: {
 		name: string;
 		askMessage: string;
 		required?: boolean;
 		defaultValue?: string;
-		validator?: (value: string) => true | string;
+		validator?: (value: string) => true | string | Promise<true | string>;
 	}) {
 		logger.debugFn(arguments);
 		const { name, askMessage: message, required = false, defaultValue = '', validator } = args;
 
 		const value = this.args.getKV([name])?.[0]?.[1];
 		logger.debugVar('value', value);
-		const validation = validator ? validator(value) : undefined;
+		const validation = validator ? await validator(value) : undefined;
 		logger.debugVar('validation', validation);
 
 		if (!_.isUndefined(value) && !_.isString(validation)) {
@@ -304,7 +304,7 @@ export abstract class classCommand {
 
 		logger.error(validation);
 
-		return this.askForArg({ message, required, defaultValue, validator });
+		return await this.askForArg({ message, required, defaultValue, validator });
 	}
 
 	/**
@@ -317,11 +317,11 @@ export abstract class classCommand {
 	 * answer is required but fails validation, it will keep prompting the user until a valid input is
 	 * provided.
 	 */
-	public askForArg(args: {
+	public async askForArg(args: {
 		message: string;
 		required: boolean;
 		defaultValue: string;
-		validator?: (value: string) => true | string;
+		validator?: (value: string) => true | string | Promise<true | string>;
 	}) {
 		logger.debugFn(arguments);
 
@@ -337,7 +337,7 @@ export abstract class classCommand {
 		let userAnswer = _prompt();
 		logger.debugVar('userAnswer', userAnswer);
 
-		let validation = validator ? validator(userAnswer) : undefined;
+		let validation = validator ? await validator(userAnswer) : undefined;
 		logger.debugVar('validation', validation);
 
 		if (required == false && !_.isString(validation)) {
@@ -348,7 +348,7 @@ export abstract class classCommand {
 			userAnswer = _prompt() || '';
 			logger.debugVar('userAnswer', userAnswer);
 
-			validation = validator ? validator(userAnswer) : undefined;
+			validation = validator ? await validator(userAnswer) : undefined;
 			logger.debugVar('validation', validation);
 
 			logger.error(validation);
@@ -407,8 +407,10 @@ export abstract class classCommand {
 		logger.debugVar('ENV_NAME_REGEX', ENV_NAME_REGEX);
 
 		if (!ENV_NAME_REGEX.test(envName)) {
-			throw `Invalid environment name "${envName}". Only A-z 0-9 - _ are allowed!`;
+			return `Invalid environment name "${envName}". Only A-z 0-9 - _ are allowed!`;
 		}
+
+		return true;
 	}
 
 	/**
