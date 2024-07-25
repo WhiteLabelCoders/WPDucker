@@ -4,11 +4,14 @@ import { pathExist } from '../path_exist/path_exist.ts';
 import { logger } from '../../global/logger.ts';
 
 /**
- * The function `generateUniqueBasename` generates a unique basename by appending a random ID to a
- * given prefix and checking if the resulting path already exists.
- * @param args - The `args` parameter is an object that contains the following properties:
- * @returns The function `generateUniqueBasename` returns a promise that resolves to a string value,
- * which is the generated unique basename.
+ * Generate a unique basename for a file in a given directory.
+ *
+ * @param args.basePath - The directory where the file will be created.
+ * @param args.prefix - The prefix for the basename.
+ * @param args.extension - The extension for the basename.
+ * @param args.timeout - The timeout in milliseconds.
+ *
+ * @returns The unique basename.
  */
 export async function generateUniqueBasename(args: {
 	basePath: string;
