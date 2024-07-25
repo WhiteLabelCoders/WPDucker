@@ -3,7 +3,7 @@
 import { DOCUMENTATION_COLOR_THEME } from '../../../constants/DOCUMENTATION_COLOR_THEME.ts';
 import { generateDocumentation } from '../../../utils/generate_documentation/generate_documentation.ts';
 
-const feedOptions: [string | string[], string][] = [
+const feedOptions = [
   [['-f', '--force'], 'Force execution'],
   [['-h', '--help'], 'Display documentation'],
   [['-dbg', '--debug'], 'Display debug logs'],

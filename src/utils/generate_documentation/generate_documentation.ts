@@ -22,9 +22,9 @@ export const generateDocumentation = (
 	args: {
 		usage: string;
 		description: string;
-		commands: [string, string][];
-		arguments: [string, string][];
-		options: [string | string[], string][];
+		commands: string[][];
+		arguments: string[][];
+		options: (string | string[])[][];
 		colorTheme: {
 			heading: string;
 			key: string;

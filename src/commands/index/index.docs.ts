@@ -9,13 +9,13 @@ import { description as commandProjectInitDescription } from '../project/init/in
 import { description as commandProjectRemoveDescription } from '../project/remove/remove.docs.ts';
 import { description as commandProjectEnvAddDescription } from '../project/env-add/env-add.docs.ts';
 
-const feedCommands: [string, string][] = [
+const feedCommands = [
 	[commandProjectInitMeta.phrase, commandProjectInitDescription],
 	[commandProjectRemoveMeta.phrase, commandProjectRemoveDescription],
 	[commandProjectEnvAddMeta.phrase, commandProjectEnvAddDescription],
 ];
 
-const feedOptions: [string | string[], string][] = [
+const feedOptions = [
 	[['-h', '--help'], 'Display documentation'],
 	[['-dbg', '--debug'], 'Display debug logs'],
 ];

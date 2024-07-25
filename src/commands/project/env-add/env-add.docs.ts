@@ -3,11 +3,11 @@
 import { DOCUMENTATION_COLOR_THEME } from '../../../constants/DOCUMENTATION_COLOR_THEME.ts';
 import { generateDocumentation } from '../../../utils/generate_documentation/generate_documentation.ts';
 
-const feedArguments: [string, string][] = [
+const feedArguments = [
 	['--env-name="..."', 'Environment name'],
 ];
 
-const feedOptions: [string | string[], string][] = [
+const feedOptions = [
 	[['-h', '--help'], 'Display documentation'],
 	[['-dbg', '--debug'], 'Display debug logs'],
 ];
