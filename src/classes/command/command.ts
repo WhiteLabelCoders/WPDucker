@@ -271,13 +271,17 @@ export abstract class classCommand {
 	}
 
 	/**
-	 * This function retrieves a command line argument or prompts the user for input if the argument is
-	 * not provided or does not pass validation.
-	 * @param args - The `getOrAskForArg` function takes in an object `args` with the following
-	 * properties:
-	 * @returns The `getOrAskForArg` function returns the value of the argument if it passes validation,
-	 * otherwise it prompts the user to provide the argument by calling the `askForArg` function with the
-	 * specified parameters.
+	 * Retrieves the value of an argument from the command's arguments or prompts the user to provide it.
+	 * If the argument is already provided and passes the validation, the value is returned.
+	 * Otherwise, the user is prompted to provide the argument value.
+	 *
+	 * @param args - The argument configuration.
+	 * @param args.name - The name of the argument.
+	 * @param args.askMessage - The message to display when prompting the user for the argument value.
+	 * @param args.required - (Optional) Indicates whether the argument is required. Defaults to false.
+	 * @param args.defaultValue - (Optional) The default value for the argument. Defaults to an empty string.
+	 * @param args.validator - (Optional) A function to validate the argument value. Should return true if the value is valid, or a string with an error message otherwise.
+	 * @returns The value of the argument.
 	 */
 	public getOrAskForArg(args: {
 		name: string;
