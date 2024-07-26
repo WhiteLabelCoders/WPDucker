@@ -52,9 +52,6 @@ Deno.test('commandProjectEnvAdd', async function testCommandProjectEnvAdd(t) {
 			},
 		);
 
-		logger.log(await shell('ls', '-la'));
-		logger.log(await shell('realpath', '.'));
-
 		assert(await noError(async () => await command._exec()), 'Check command execution');
 
 		assert(
