@@ -55,7 +55,11 @@ class classCommandProjectInit extends classCommand {
 		};
 	}
 
-	public async validateProjectDir(dir: string) {
+	public async validateProjectDir(dir: string | undefined) {
+		if (!dir) {
+			throw `Invalid project name!`;
+		}
+
 		const filename = `${cwd()}/${dir}`;
 		if (await pathExist(filename)) {
 			throw `File "${filename}" already exist!`;

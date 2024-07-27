@@ -52,6 +52,7 @@ class classCommandProjectEnvAdd extends classCommand {
 				name: 'env-name',
 				askMessage: 'Enter environment name (only A-z 0-9 - _ are allowed):',
 				required: false,
+				throwIfInvalid: true,
 				defaultValue: await generateUniqueBasename({
 					prefix: 'my-env',
 					basePath: `${await pwd()}/wpd/environments`,

@@ -13,6 +13,9 @@ import { getError } from '../../../utils/get_error/get_error.ts';
 import { initProject } from '../../../utils/init_project/init_project.ts';
 import { logger } from '../../../global/logger.ts';
 import { shell } from '../../../utils/shell/shell.ts';
+import { assertThrows } from 'https://deno.land/std@0.224.0/assert/assert_throws.ts';
+import { prepareCmd } from '../../../utils/prepare_command_to_execution/prepare_command_to_execution.ts';
+import { assertIsError } from 'https://deno.land/std@0.224.0/assert/assert_is_error.ts';
 
 Deno.test('commandProjectEnvAdd', async function testCommandProjectEnvAdd(t) {
 	const testDir = `${cwd()}/${await generateUniqueBasename({
@@ -41,7 +44,33 @@ Deno.test('commandProjectEnvAdd', async function testCommandProjectEnvAdd(t) {
 		logger.log(await shell('ls', '-la'));
 	});
 
-	await t.step(async function _exec() {
+	await t.step(async function validEnvName() {
+		const envName = 'my-custom-env-name';
+
+		const command = prepareCmd(_commandMeta.phrase, ['--debug', `--env-name="${envName}"`]);
+
+		assert(await noError(async () => await command._exec()), 'Check command execution');
+
+		assert(
+			await pathExist(
+				`${cwd()}/wpd/environments/${envName}/config.json`,
+			) === true,
+			'Check if config file exists',
+		);
+	});
+
+	await t.step(async function invalidEnvName() {
+		for (const envName of ['my-custom invalid -env-name', 'my-custom-$-env-name', '$%%%']) {
+			const command = prepareCmd(_commandMeta.phrase, ['--debug', `--env-name="${envName}"`]);
+
+			assert(
+				await getError(async () => await command._exec()),
+				`Command should throw an error for env name: "${envName}"`,
+			);
+		}
+	});
+
+	await t.step(async function invalidLocation() {
 		const commandMeta = COMMANDS_META.find((item) => item.phrase === _commandMeta.phrase);
 
 		if (!commandMeta) {
@@ -61,14 +90,7 @@ Deno.test('commandProjectEnvAdd', async function testCommandProjectEnvAdd(t) {
 			},
 		);
 
-		assert(await noError(async () => await command._exec()), 'Check command execution');
-
-		assert(
-			await pathExist(
-				`${cwd()}/wpd/environments/${envName}/config.json`,
-			) === true,
-			'Check if config file exists',
-		);
+		const _cwd = cwd();
 
 		Deno.chdir(`${testDir}`);
 
@@ -76,6 +98,8 @@ Deno.test('commandProjectEnvAdd', async function testCommandProjectEnvAdd(t) {
 			isString(await getError<string>(async () => await command._exec())) === true,
 			'Command should not be executed outside the project',
 		);
+
+		Deno.chdir(`${_cwd}`);
 	});
 
 	Deno.chdir(`${testDir}/../`);

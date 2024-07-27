@@ -4,7 +4,7 @@ import { TCommandArgs } from './command.d.ts';
 import { logger } from '../../global/logger.ts';
 import { getCurrentCliVersion } from '../../utils/get_current_cli_version/get_current_cli_version.ts';
 import { emojify } from '../../utils/emojify/emojify.ts';
-import { lodash as _ } from 'https://deno.land/x/deno_ts_lodash@0.0.1/mod.ts';
+import { lodash, lodash as _ } from 'https://deno.land/x/deno_ts_lodash@0.0.1/mod.ts';
 import { pwd } from '../../utils/pwd/pwd.ts';
 
 export abstract class classCommand {
@@ -271,38 +271,58 @@ export abstract class classCommand {
 	}
 
 	/**
-	 * Retrieves the value of an argument from the command's arguments or prompts the user to provide it.
-	 * If the argument is already provided and passes the validation, the value is returned.
-	 * Otherwise, the user is prompted to provide the argument value.
+	 * Retrieves the value of an argument or prompts the user to provide it.
 	 *
-	 * @param args - The argument configuration.
+	 * @param args - The configuration options for retrieving or prompting the argument.
 	 * @param args.name - The name of the argument.
 	 * @param args.askMessage - The message to display when prompting the user for the argument value.
-	 * @param args.required - (Optional) Indicates whether the argument is required. Defaults to false.
-	 * @param args.defaultValue - (Optional) The default value for the argument. Defaults to an empty string.
-	 * @param args.validator - (Optional) A function to validate the argument value. Should return true if the value is valid, or a string with an error message otherwise.
+	 * @param args.required - (Optional) Specifies whether the argument is required. Defaults to `false`.
+	 * @param args.throwIfInvalid - (Optional) Specifies whether to throw an error if the argument value is invalid. Defaults to `false`.
+	 * @param args.defaultValue - (Optional) The default value to use if the argument is not provided.
+	 * @param args.validator - (Optional) A function that validates the argument value. Should return `true` if the value is valid, a string error message if the value is invalid, or a promise that resolves to either of these.
+	 *
 	 * @returns The value of the argument.
+	 *
+	 * @throws If the argument is required and not provided, or if `throwIfInvalid` is `true` and the argument value is invalid.
 	 */
 	public async getOrAskForArg(args: {
 		name: string;
 		askMessage: string;
 		required?: boolean;
+		throwIfInvalid?: boolean;
 		defaultValue?: string;
 		validator?: (value: string) => true | string | Promise<true | string>;
 	}) {
 		logger.debugFn(arguments);
-		const { name, askMessage: message, required = false, defaultValue = '', validator } = args;
+		const {
+			name,
+			askMessage: message,
+			required = false,
+			throwIfInvalid = false,
+			defaultValue = '',
+			validator,
+		} = args;
 
 		const value = this.args.getKV([name])?.[0]?.[1];
 		logger.debugVar('value', value);
 		const validation = validator ? await validator(value) : undefined;
 		logger.debugVar('validation', validation);
 
+		// If the value is provided and valid, return the value
 		if (!_.isUndefined(value) && !_.isString(validation)) {
 			return value;
 		}
 
-		logger.error(validation);
+		// IF throwIfInvalid is true and provided validator is a function, throw an error
+		if (throwIfInvalid && lodash.isFunction(validator)) {
+			throw lodash.isString(validation)
+				? validation
+				: `Invalid value of argument "${name}" !`;
+		}
+
+		logger.error(
+			lodash.isString(validation) ? validation : `Invalid value of argument "${name}" !`,
+		);
 
 		return await this.askForArg({ message, required, defaultValue, validator });
 	}
