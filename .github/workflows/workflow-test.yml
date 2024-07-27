@@ -30,8 +30,11 @@ jobs:
       - name: Create SECRET_KEY file
         run: echo "${{ secrets.SECRET_KEY }}" > "SECRET_KEY"
 
+      - name: Cache test_db_instance directory
+        uses: actions/cache@v4
+        with:
+          path: test_db_instance
+          key: ${{ runner.os }}${{ github.ref }}-test_db_instance-${{ hashFiles('test_db_instance/**') }}
+
       - name: "test"
-        run: |
-          echo "$SHELL"
-          help
-        # run: "deno task test"
+        run: "deno task test"
