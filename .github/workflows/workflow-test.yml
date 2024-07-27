@@ -33,5 +33,5 @@ jobs:
       - name: "test"
         run: |
           echo "$SHELL"
-          help"
+          help
         # run: "deno task test"
