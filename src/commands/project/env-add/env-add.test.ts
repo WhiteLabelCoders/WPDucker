@@ -27,9 +27,18 @@ Deno.test('commandProjectEnvAdd', async function testCommandProjectEnvAdd(t) {
 	await t.step(async function _initProject() {
 		const projectName = 'wpd-test-project';
 
+		logger.log(await shell('realpath', '.'));
+		logger.log(await shell('ls', '-la'));
+
 		await initProject(projectName);
 
+		logger.log(await shell('realpath', '.'));
+		logger.log(await shell('ls', '-la'));
+
 		Deno.chdir(projectName);
+
+		logger.log(await shell('realpath', '.'));
+		logger.log(await shell('ls', '-la'));
 	});
 
 	await t.step(async function _exec() {
