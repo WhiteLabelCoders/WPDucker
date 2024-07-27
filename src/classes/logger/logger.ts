@@ -158,7 +158,7 @@ export class classLogger {
 		const extraDebugMsg = debug ? ` ${getCallingFunctionName()}(...):` : '';
 		const extraDebugMsgColor = ansiColors.Dim;
 
-		data = this.truncateLogData(data);
+		data = debug ? data : this.truncateLogData(data);
 
 		const coloredText = [
 			`${
