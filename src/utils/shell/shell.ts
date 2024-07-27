@@ -2,8 +2,13 @@
 
 import { logger } from '../../global/logger.ts';
 
+/**
+ * Executes a shell command and returns the output.
+ * @param args - The command and its arguments.
+ * @returns The output of the command if successful, otherwise false.
+ */
 export async function shell(...args: string[]) {
-    const cmd = new Deno.Command('command', { args });
+    const cmd = new Deno.Command(args[0], { args: args.slice(1) });
 
     logger.debug(`Shell: execute \`${args.join(' ')}\``);
 
