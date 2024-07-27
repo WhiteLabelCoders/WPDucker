@@ -37,5 +37,4 @@ jobs:
           key: ${{ runner.os }}${{ github.ref }}-test_db_instance-${{ hashFiles('test_db_instance/**') }}
 
       - name: "test"
-        # run: "deno task test"
-        run: command ls -la
+        run: "deno task test"
