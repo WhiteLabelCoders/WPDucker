@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { classDatabaseServer } from '../../classes/database_server/database_server.ts';
 import { classDatabaseSqlLite } from '../../classes/database_sqllite/database_sqllite.ts';
 import { DB_SCHEMA } from '../../constants/DB_SCHEMA.ts';

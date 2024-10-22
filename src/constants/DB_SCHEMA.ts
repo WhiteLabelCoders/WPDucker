@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { classDatabaseSqlLiteSchema } from '../classes/database_sqllite_schema/database_sqllite_schema.ts';
 import { DB_NAME } from './DB_NAME.ts';
 import { _ } from '../utils/lodash/lodash.ts';

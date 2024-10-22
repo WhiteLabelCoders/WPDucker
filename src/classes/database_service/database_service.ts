@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import meta from '../../commands/service/db/start/start.ts';
 import { CLI_DIR } from '../../constants/CLI_DIR.ts';
 import { logger } from '../../global/logger.ts';

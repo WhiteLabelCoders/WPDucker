@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { assert } from 'jsr:@std/assert';
 import { logger } from '../../global/logger.ts';
 import { cwd } from '../cwd/cwd.ts';

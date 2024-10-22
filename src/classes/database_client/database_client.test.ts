@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { _ } from '../../utils/lodash/lodash.ts';
 import { cwd } from '../../utils/cwd/cwd.ts';
 import { getError } from '../../utils/get_error/get_error.ts';

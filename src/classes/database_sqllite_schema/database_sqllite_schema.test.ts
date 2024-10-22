@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { assert } from 'https://deno.land/std@0.224.0/assert/assert.ts';
 import { classDatabaseSqlLiteSchema } from './database_sqllite_schema.ts';
 import { _ } from '../../utils/lodash/lodash.ts';

@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { assert } from 'https://deno.land/std@0.224.0/assert/assert.ts';
 import { cwd } from '../../../../utils/cwd/cwd.ts';
 import { generateUniqueBasename } from '../../../../utils/generate_unique_basename/generate_unique_basename.ts';
