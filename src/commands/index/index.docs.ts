@@ -5,14 +5,17 @@ import { generateDocumentation } from '../../utils/generate_documentation/genera
 import commandProjectInitMeta from '../project/init/init.ts';
 import commandProjectRemoveMeta from '../project/remove/remove.ts';
 import commandProjectEnvAddMeta from '../project/env-add/env-add.ts';
+import classCommandDbServiceStartMeta from '../service/db/start/start.ts';
 import { description as commandProjectInitDescription } from '../project/init/init.docs.ts';
 import { description as commandProjectRemoveDescription } from '../project/remove/remove.docs.ts';
 import { description as commandProjectEnvAddDescription } from '../project/env-add/env-add.docs.ts';
+import { description as classCommandDbServiceStartDescription } from '../service/db/start/start.docs.ts';
 
 const feedCommands = [
 	[commandProjectInitMeta.phrase, commandProjectInitDescription],
 	[commandProjectRemoveMeta.phrase, commandProjectRemoveDescription],
 	[commandProjectEnvAddMeta.phrase, commandProjectEnvAddDescription],
+	[classCommandDbServiceStartMeta.phrase, classCommandDbServiceStartDescription],
 ];
 
 const feedOptions = [
