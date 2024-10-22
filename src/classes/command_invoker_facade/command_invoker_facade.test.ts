@@ -29,15 +29,9 @@ Deno.test('classCommandInvokerFacade', async function testClassCommandInvokerFac
 
 	const tmpDir = testData.dir.cli.tmp;
 	const commandArguments = parseCliArgs(['./', '--debug']);
-	const database = await getDbForTests();
-	const gitHubApiClient = new classGitHubApiClient({
-		github: {
-			owner: 'WhiteLabelCoders',
-			repo: 'WPDucker',
-			apiUrl: 'https://api.github.com',
-		},
-		database,
-	});
+	const { database, server } = await getDbForTests();
+
+	const gitHubApiClient = new classGitHubApiClient({ database });
 	const cliVersionManager = new classCliVersionManager({
 		cliDir: testData.dir.cli,
 		gitHubApiClient,
@@ -81,6 +75,8 @@ Deno.test('classCommandInvokerFacade', async function testClassCommandInvokerFac
 
 	await commandInvokerFacade.exec();
 	await commandInvokerFacade.destroy();
+	await database.destroySession();
+	await server.stop();
 
 	await Deno.remove(testDir, { recursive: true });
 });

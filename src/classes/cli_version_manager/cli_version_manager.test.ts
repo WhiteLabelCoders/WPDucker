@@ -7,7 +7,7 @@ import { classCliVersionManager } from './cli_version_manager.ts';
 import { classGitHubApiClient } from '../github/gh_api_client.ts';
 import { getError } from '../../utils/get_error/get_error.ts';
 import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
-import { isBoolean, isObject } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
+import { _ } from '../../utils/lodash/lodash.ts';
 import { pathExist } from '../../utils/path_exist/path_exist.ts';
 import { getDbForTests } from '../../utils/get_db_for_tests/get_db_for_tests.ts';
 
@@ -28,16 +28,9 @@ Deno.test('classCliVersionManager', async function testClassCliVersionManager() 
 
 	await createProjectStructure(`${testData.dir.project}`);
 
-	const database = await getDbForTests();
+	const { database, server } = await getDbForTests();
 
-	const gitHubApiClient = new classGitHubApiClient({
-		github: {
-			owner: 'WhiteLabelCoders',
-			repo: 'WPDucker',
-			apiUrl: 'https://api.github.com',
-		},
-		database,
-	});
+	const gitHubApiClient = new classGitHubApiClient({ database });
 
 	const cliVersionManager = new classCliVersionManager({
 		cliDir: testData.dir.cli,
@@ -99,13 +92,15 @@ Deno.test('classCliVersionManager', async function testClassCliVersionManager() 
 
 	assert(Array.isArray(await cliVersionManager.getVersionsList()), 'versions list');
 
-	assert(isObject(cliVersionManager.getDirInfo()), 'get dir info');
+	assert(_.isObject(cliVersionManager.getDirInfo()), 'get dir info');
 
-	assert(isBoolean(cliVersionManager.shouldOutsourceCmd()), 'should outsource cmd');
+	assert(_.isBoolean(cliVersionManager.shouldOutsourceCmd()), 'should outsource cmd');
 
 	Deno.chdir(_cwd);
 
-	await database.deleteAll();
+	await database.destroySession();
+
+	await server.stop();
 
 	await Deno.remove(testDir, { recursive: true });
 });

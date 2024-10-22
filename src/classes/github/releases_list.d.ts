@@ -148,3 +148,12 @@ export interface ReactionRollup {
 	total_count: number;
 	url: string;
 }
+
+export interface IRelease {
+	tag_name: IReleases['tag_name'];
+	published_at: IReleases['published_at'];
+	assets: {
+		name: ReleaseAsset['name'];
+		browser_download_url: ReleaseAsset['browser_download_url'];
+	}[];
+}

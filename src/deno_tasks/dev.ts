@@ -1,6 +1,6 @@
 // Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
-import { lodash as _ } from 'https://deno.land/x/deno_ts_lodash@0.0.1/mod.ts';
+import { _ } from '../utils/lodash/lodash.ts';
 
 const watcher = Deno.watchFs(['src']);
 

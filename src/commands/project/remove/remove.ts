@@ -59,7 +59,7 @@ class classCommandProjectRemove extends classCommand {
 	}
 }
 
-const meta: TCommandMeta = {
+const meta: TCommandMeta<classCommandProjectRemove> = {
 	phrase,
 	documentation: commandProjectRemoveDocs,
 	class: classCommandProjectRemove,

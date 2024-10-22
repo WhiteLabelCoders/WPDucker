@@ -19,7 +19,7 @@ class classCommandDefault extends classCommand {
 	}
 }
 
-const meta: TCommandMeta = {
+const meta: TCommandMeta<classCommandDefault> = {
 	phrase,
 	documentation: commandDefaultDocs,
 	class: classCommandDefault,

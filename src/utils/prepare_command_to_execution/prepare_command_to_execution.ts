@@ -1,25 +1,30 @@
-import { classCommand } from '../../classes/command/command.ts';
-import { COMMANDS_META } from '../../pre_compiled/__commands_meta.ts';
+import { TCommandMeta } from '../../classes/command/command.d.ts';
+import { logger } from '../../global/logger.ts';
 import { parseCliArgs } from '../parser/parser.ts';
 
 /**
- * Prepares and returns a command object based on the provided command phrase and arguments.
- * @template T - The type of the command object to be returned.
- * @param {string} cmdPhrase - The command phrase.
- * @param {string[]} args - The command arguments.
- * @returns {classCommand} - The prepared command object.
- * @throws {string} - Throws an error if the command phrase is not found in the COMMANDS_META array.
+ * The function `prepareCmd` takes in command metadata and arguments, creates a new command instance
+ * based on the metadata, and returns it.
+ * @param meta - `meta` is an object containing metadata for a command. It includes information such as
+ * the class of the command, the command phrase, and documentation for the command.
+ * @param {string[]} args - The `args` parameter in the `prepareCmd` function is an array of strings
+ * that represent the command line arguments passed to the function. These arguments will be used along
+ * with the command metadata (`meta`) to prepare and create a new command instance.
+ * @returns An instance of a command object is being returned.
  */
-export function prepareCmd(cmdPhrase: string, args: string[]): classCommand {
-    const cmdMeta = COMMANDS_META.find((item) => item.phrase === cmdPhrase);
+export function prepareCmd<T>(meta: TCommandMeta<T>, args: string[]) {
+    logger.debugFn(arguments);
+    const cmdMeta = meta;
 
     if (!cmdMeta) {
-        throw `Can not find command by phrase "${cmdPhrase}"!`;
+        throw `Can not find command!`;
     }
 
-    const cmd = new cmdMeta.class(
+    const _class = cmdMeta.class;
+
+    const cmd = new _class(
         {
-            commandArgs: parseCliArgs([cmdPhrase, ...args]),
+            commandArgs: parseCliArgs([...cmdMeta.phrase.split(' '), ...args]),
             documentation: cmdMeta.documentation,
         },
     );

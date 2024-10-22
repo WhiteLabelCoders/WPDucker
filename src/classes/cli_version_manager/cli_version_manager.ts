@@ -7,7 +7,7 @@ import { classGitHubApiClient } from '../github/gh_api_client.ts';
 import { downloadFile } from '../../utils/download_file/download_file.ts';
 import { getCurrentCliVersion } from '../../utils/get_current_cli_version/get_current_cli_version.ts';
 import { getCliVersionRequiredByProject } from '../../utils/get_cli_version_required_by_project/get_cli_version_required_by_project.ts';
-import { ensureExecutePermissions } from '../../utils/path/ensure_execute_permissions.ts';
+import { ensureExecutePermissions } from '../../utils/ensure_execute_permissions/ensure_execute_permissions.ts';
 import { decompress } from 'https://deno.land/x/zip@v1.2.5/mod.ts';
 import { pathExist } from '../../utils/path_exist/path_exist.ts';
 import { version } from './cli_version_manager.d.ts';
@@ -463,6 +463,10 @@ export class classCliVersionManager {
 
 		const release = await this.gitHubApi.fetchReleaseByTagName(tagName);
 		logger.debugVar('release', release);
+
+		if (!release) {
+			throw `Not found release "${tagName}" version!`;
+		}
 
 		const osAlias = getOsAlias();
 		logger.debugVar('osAlias', osAlias);

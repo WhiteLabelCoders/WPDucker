@@ -6,7 +6,7 @@ import { assertGreater } from 'https://deno.land/std@0.201.0/assert/assert_great
 import { ansiColors } from './colors.ts';
 import { noError } from '../../utils/no_error/no_error.ts';
 import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
-import { isArray } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
+import { _ } from '../../utils/lodash/lodash.ts';
 
 Deno.test('classLogger', async function testClassLogger() {
 	const logger = new classLogger();
@@ -38,7 +38,7 @@ Deno.test('classLogger', async function testClassLogger() {
 	logsData.forEach((log) => {
 		// deno-lint-ignore no-explicit-any
 		const args = log?.args || log.message;
-		(logger as any)[log.logType](...(isArray(args) ? args : [args]));
+		(logger as any)[log.logType](...(_.isArray(args) ? args : [args]));
 	});
 
 	logger.omitStorage(true);

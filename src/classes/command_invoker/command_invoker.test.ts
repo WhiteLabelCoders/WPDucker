@@ -2,13 +2,13 @@
 
 import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
 import { classCommandInvoker } from './command_invoker.ts';
-import { isFunction, isString } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
 import { classCommand } from '../command/command.ts';
 import { TCommandArgs } from '../command/command.d.ts';
 import { parseCliArgs } from '../../utils/parser/parser.ts';
 import { logger } from '../../global/logger.ts';
 import { noError } from '../../utils/no_error/no_error.ts';
 import { getError } from '../../utils/get_error/get_error.ts';
+import { _ } from '../../utils/lodash/lodash.ts';
 Deno.test('classCommandInvoker', async function testClassCommandInvoker() {
 	const commandInvokerFactory = () => new classCommandInvoker();
 
@@ -23,21 +23,21 @@ Deno.test('classCommandInvoker', async function testClassCommandInvoker() {
 	assert(invoker.outsourceTarget?.[0] === 'myTarget', 'setOutsourceTarget');
 
 	assert(
-		isFunction(invoker.getCommandExecutionCallback()),
+		_.isFunction(invoker.getCommandExecutionCallback()),
 		'getCommandExecutionCallback for not empty string',
 	);
 
 	invoker.setOutsourceTarget('');
 
 	assert(
-		isFunction(invoker.getCommandExecutionCallback()),
+		_.isFunction(invoker.getCommandExecutionCallback()),
 		'getCommandExecutionCallback for empty string',
 	);
 
 	invoker = commandInvokerFactory();
 
 	assert(
-		isFunction(invoker.getCommandExecutionCallback()),
+		_.isFunction(invoker.getCommandExecutionCallback()),
 		'getCommandExecutionCallback for undefined',
 	);
 
@@ -66,7 +66,7 @@ Deno.test('classCommandInvoker', async function testClassCommandInvoker() {
 	invoker.setOutsourceTarget('');
 
 	assert(
-		isString(await getError(async () => await invoker.outsourceCommand(command))),
+		_.isString(await getError(async () => await invoker.outsourceCommand(command))),
 		'outsource command with error',
 	);
 

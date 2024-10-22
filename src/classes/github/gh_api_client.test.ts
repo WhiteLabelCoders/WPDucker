@@ -5,16 +5,9 @@ import { classGitHubApiClient } from './gh_api_client.ts';
 import { getDbForTests } from '../../utils/get_db_for_tests/get_db_for_tests.ts';
 
 Deno.test('classGitHubApiClient', async function testClassGitHubApiClient() {
-	const database = await getDbForTests();
+	const { database, server } = await getDbForTests();
 
-	const ghApi = new classGitHubApiClient({
-		github: {
-			owner: 'WhiteLabelCoders',
-			repo: 'WPDucker',
-			apiUrl: 'https://api.github.com',
-		},
-		database,
-	});
+	const ghApi = new classGitHubApiClient({ database });
 
 	const releases = await ghApi.fetchReleases();
 	const releaseTagName = releases[0].tag_name;
@@ -27,4 +20,7 @@ Deno.test('classGitHubApiClient', async function testClassGitHubApiClient() {
 		'object',
 		'ghApi.fetchReleaseByTagName(releaseTagName) return object',
 	);
+
+	await database.destroySession();
+	await server.stop();
 });

@@ -7,15 +7,13 @@ import { COMMANDS_META } from '../../../pre_compiled/__commands_meta.ts';
 import _commandMeta from './env-add.ts';
 import { generateUniqueBasename } from '../../../utils/generate_unique_basename/generate_unique_basename.ts';
 import { cwd } from '../../../utils/cwd/cwd.ts';
-import { isString } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
+import { _ } from '../../../utils/lodash/lodash.ts';
 import { pathExist } from '../../../utils/path_exist/path_exist.ts';
 import { getError } from '../../../utils/get_error/get_error.ts';
 import { initProject } from '../../../utils/init_project/init_project.ts';
 import { logger } from '../../../global/logger.ts';
 import { shell } from '../../../utils/shell/shell.ts';
-import { assertThrows } from 'https://deno.land/std@0.224.0/assert/assert_throws.ts';
 import { prepareCmd } from '../../../utils/prepare_command_to_execution/prepare_command_to_execution.ts';
-import { assertIsError } from 'https://deno.land/std@0.224.0/assert/assert_is_error.ts';
 
 Deno.test('commandProjectEnvAdd', async function testCommandProjectEnvAdd(t) {
 	const testDir = `${cwd()}/${await generateUniqueBasename({
@@ -47,7 +45,7 @@ Deno.test('commandProjectEnvAdd', async function testCommandProjectEnvAdd(t) {
 	await t.step(async function validEnvName() {
 		const envName = 'my-custom-env-name';
 
-		const command = prepareCmd(_commandMeta.phrase, ['--debug', `--env-name="${envName}"`]);
+		const command = prepareCmd(_commandMeta, ['--debug', `--env-name="${envName}"`]);
 
 		assert(await noError(async () => await command._exec()), 'Check command execution');
 
@@ -61,7 +59,7 @@ Deno.test('commandProjectEnvAdd', async function testCommandProjectEnvAdd(t) {
 
 	await t.step(async function invalidEnvName() {
 		for (const envName of ['my-custom invalid -env-name', 'my-custom-$-env-name', '$%%%']) {
-			const command = prepareCmd(_commandMeta.phrase, ['--debug', `--env-name="${envName}"`]);
+			const command = prepareCmd(_commandMeta, ['--debug', `--env-name="${envName}"`]);
 
 			assert(
 				await getError(async () => await command._exec()),
@@ -95,7 +93,7 @@ Deno.test('commandProjectEnvAdd', async function testCommandProjectEnvAdd(t) {
 		Deno.chdir(`${testDir}`);
 
 		assert(
-			isString(await getError<string>(async () => await command._exec())) === true,
+			_.isString(await getError<string>(async () => await command._exec())) === true,
 			'Command should not be executed outside the project',
 		);
 

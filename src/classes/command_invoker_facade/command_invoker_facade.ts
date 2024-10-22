@@ -7,6 +7,7 @@ import { pathExist } from '../../utils/path_exist/path_exist.ts';
 import { version } from '../cli_version_manager/cli_version_manager.d.ts';
 import { classCliVersionManager } from '../cli_version_manager/cli_version_manager.ts';
 import { TCommandMeta } from '../command/command.d.ts';
+import { classCommand } from '../command/command.ts';
 import { classCommandInvoker } from '../command_invoker/command_invoker.ts';
 import { classCommandsRepository } from '../command_repository/command_repository.ts';
 import { classDatabase } from '../database/database.ts';
@@ -54,7 +55,7 @@ export class classCommandInvokerFacade {
 		logger.debugVar('this.commandInvoker', this.commandInvoker);
 	}
 
-	public addCommand(commandMeta: TCommandMeta) {
+	public addCommand<T extends classCommand>(commandMeta: TCommandMeta<T>) {
 		logger.debugFn(arguments);
 
 		this.commandsRepository.add(commandMeta);
@@ -66,7 +67,7 @@ export class classCommandInvokerFacade {
 	async init() {
 		logger.debugFn(arguments);
 
-		await this.database.init('wpd');
+		await this.database.init();
 		await this.mkTmpDir();
 	}
 
@@ -97,7 +98,7 @@ export class classCommandInvokerFacade {
 			await Deno.mkdir(this.tmpDir, { recursive: true });
 		}
 
-		if (await this.database.getSessionValue<string | undefined>('tmpDir') !== this.tmpDir) {
+		if ((await this.database.getSessionValue<string>('tmpDir'))?.value !== this.tmpDir) {
 			await this.database.setSessionValue('tmpDir', this.tmpDir);
 		}
 	}

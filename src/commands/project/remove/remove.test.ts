@@ -7,7 +7,7 @@ import { COMMANDS_META } from '../../../pre_compiled/__commands_meta.ts';
 import _commandMeta from './remove.ts';
 import { generateUniqueBasename } from '../../../utils/generate_unique_basename/generate_unique_basename.ts';
 import { cwd } from '../../../utils/cwd/cwd.ts';
-import { isUndefined } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
+import { _ } from '../../../utils/lodash/lodash.ts';
 import createProjectStructure from '../../../utils/create_project_structure/create_project_structure.ts';
 import { CLI_PROJECT_STRUCTURE } from '../../../constants/CLI_PROJECT_STRUCTURE.ts';
 import { pathExist } from '../../../utils/path_exist/path_exist.ts';
@@ -110,7 +110,7 @@ Deno.test('commandProjectRemove', async function testCommandProjectRemove(t) {
 		await Deno.remove(testDir, { recursive: true });
 	}
 
-	if (!isUndefined(error)) {
+	if (!_.isUndefined(error)) {
 		throw error;
 	}
 });

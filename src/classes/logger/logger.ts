@@ -3,7 +3,7 @@
 import { ansiColors } from './colors.ts';
 import { getCallingFunctionName } from '../../utils/calling_function_name/calling_function_name.ts';
 import { formatDate } from '../../utils/format_date/format_date.ts';
-import { isString } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
+import { _ } from '../../utils/lodash/lodash.ts';
 import { secretKey } from '../../pre_compiled/__secret_key.ts';
 import { generateCrptoKey } from '../../utils/generate_crypto_key/generate_crypto_key.ts';
 
@@ -104,7 +104,7 @@ export class classLogger {
 		const message = data.map((v) => {
 			let value = JSON.stringify(v);
 
-			if (!isString(value)) {
+			if (!_.isString(value)) {
 				return value;
 			}
 
@@ -193,7 +193,7 @@ export class classLogger {
 	// deno-lint-ignore no-explicit-any
 	public truncateLogData(data: any[]) {
 		return data.map((d) => {
-			if (isString(d)) {
+			if (_.isString(d)) {
 				d = d.length <= 200 ? d : `${d.slice(0, 197)}...`;
 			}
 
@@ -217,7 +217,7 @@ export class classLogger {
 		const secrets = this.getSecrets();
 
 		return data.map((d) => {
-			const stringifed: string = isString(d) ? d : JSON.stringify(d);
+			const stringifed: string = _.isString(d) ? d : JSON.stringify(d);
 
 			if (!this.stringContainsSecret(stringifed)) {
 				return d;
@@ -230,7 +230,7 @@ export class classLogger {
 				hashed = hashed.replaceAll(secret, new Array(secret.length).fill('*').join(''));
 			}
 
-			if (isString(d)) {
+			if (_.isString(d)) {
 				return hashed;
 			}
 

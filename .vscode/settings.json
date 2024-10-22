@@ -25,5 +25,8 @@
   "editor.wordWrap": "on",
   "[yaml]": {
     "editor.defaultFormatter": "redhat.vscode-yaml"
-  }
+  },
+  "cSpell.words": [
+    "emojify"
+  ]
 }

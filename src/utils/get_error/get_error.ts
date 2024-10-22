@@ -10,7 +10,7 @@ import { logger } from '../../global/logger.ts';
  * @returns The function `getError` returns a promise that resolves to the error object caught in the
  * `catch` block, or `undefined` if no error was thrown.
  */
-export async function getError<T>(callback: () => Promise<void> | void): Promise<T> {
+export async function getError<T>(callback: () => Promise<any> | any): Promise<T> {
 	logger.debugFn(arguments);
 
 	let _throw = undefined;
@@ -23,5 +23,5 @@ export async function getError<T>(callback: () => Promise<void> | void): Promise
 
 	logger.debugVar('_throw', _throw);
 
-	return _throw;
+	return _throw as T;
 }

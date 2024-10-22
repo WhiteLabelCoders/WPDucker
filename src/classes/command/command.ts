@@ -4,7 +4,7 @@ import { TCommandArgs } from './command.d.ts';
 import { logger } from '../../global/logger.ts';
 import { getCurrentCliVersion } from '../../utils/get_current_cli_version/get_current_cli_version.ts';
 import { emojify } from '../../utils/emojify/emojify.ts';
-import { lodash, lodash as _ } from 'https://deno.land/x/deno_ts_lodash@0.0.1/mod.ts';
+import { _ } from '../../utils/lodash/lodash.ts';
 import { pwd } from '../../utils/pwd/pwd.ts';
 
 export abstract class classCommand {
@@ -314,14 +314,12 @@ export abstract class classCommand {
 		}
 
 		// IF throwIfInvalid is true and provided validator is a function, throw an error
-		if (throwIfInvalid && lodash.isFunction(validator)) {
-			throw lodash.isString(validation)
-				? validation
-				: `Invalid value of argument "${name}" !`;
+		if (throwIfInvalid && _.isFunction(validator)) {
+			throw _.isString(validation) ? validation : `Invalid value of argument "${name}" !`;
 		}
 
 		logger.error(
-			lodash.isString(validation) ? validation : `Invalid value of argument "${name}" !`,
+			_.isString(validation) ? validation : `Invalid value of argument "${name}" !`,
 		);
 
 		return await this.askForArg({ message, required, defaultValue, validator });

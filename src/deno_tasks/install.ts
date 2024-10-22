@@ -2,52 +2,61 @@
 
 import { classCliVersionManager } from '../classes/cli_version_manager/cli_version_manager.ts';
 import { classDatabase } from '../classes/database/database.ts';
+import { classDatabaseService } from '../classes/database_service/database_service.ts';
 import classDependencyChecker from '../classes/dependency_checker/dependency_checker.ts';
 import { classGitHubApiClient } from '../classes/github/gh_api_client.ts';
 import { CLI_DIR } from '../constants/CLI_DIR.ts';
+import { DB_SCHEMA } from '../constants/DB_SCHEMA.ts';
+import { DB_SERVER_SOCKET_PATH } from '../constants/DB_SERVER_SOCKET_PATH.ts';
+import { DB_SERVICE_NAME } from '../constants/DB_SERVICE_NAME.ts';
 import { logger } from '../global/logger.ts';
 import { generateUniqueBasename } from '../utils/generate_unique_basename/generate_unique_basename.ts';
 
 await (async function installer() {
 	const tmpDir = `${CLI_DIR.tmp}/${await generateUniqueBasename({ basePath: CLI_DIR.tmp })}`;
-	const database = new classDatabase({ dirname: `${CLI_DIR.localStorage}` });
-	const gitHubApiClient = new classGitHubApiClient({
-		github: {
-			owner: 'WhiteLabelCoders',
-			repo: 'WPDucker',
-			apiUrl: 'https://api.github.com',
-		},
-		database,
+	const database = new classDatabase({
+		dbSchema: DB_SCHEMA,
+		dbServerSocketPath: DB_SERVER_SOCKET_PATH,
 	});
+	const gitHubApiClient = new classGitHubApiClient({ database });
 	const cliVersionManager = new classCliVersionManager({
 		cliDir: CLI_DIR,
 		gitHubApiClient,
 		tmpDir,
 	});
 
-	logger.info('Initialize installer');
+	logger.info('Initializing cli version manager');
 	await cliVersionManager.init();
 
-	logger.info('Install latest version of wpd');
+	logger.info('Installing latest version of WPDucker');
 	const latest = await cliVersionManager.useLatest();
 
-	const shell = Deno.env.get('SHELL');
+	logger.info(`Installing WPDucker database service`);
+	const dbService = new classDatabaseService({
+		name: DB_SERVICE_NAME,
+		description: 'WPDucker database service',
+		execPath: `${cliVersionManager.getDirInfo().main}/wpd`,
+	});
 
-	logger.info(`Add wpd path to shell profile "${shell}"`);
+	await dbService.install(true);
+
+	const shell = Deno.env.get('SHELL') || '';
+
+	logger.info(`Adding WPDucker path to shell profile "${shell}"`);
 
 	let profile = '';
-	switch (shell) {
-		case '/bin/zsh':
+	switch (shell.split('/').pop()) {
+		case 'zsh':
 			profile = '.zshrc';
 			break;
 
-		case '/bin/bash':
+		case 'bash':
 			profile = '.bashrc';
 			break;
 
 		default:
 			logger.error(
-				`Not supported shell "${shell}"! Please add manually wpd path "${cliVersionManager.getDirInfo().main}" to your shell profile (${shell})`,
+				`Not supported shell "${shell}"! Please add manually WPDucker path "${cliVersionManager.getDirInfo().main}" to your shell profile (${shell})`,
 			);
 			break;
 	}
@@ -92,7 +101,7 @@ await (async function installer() {
 	}
 
 	logger.success(
-		`Wpd ${latest} successfully installed. Please restart terminal and try to execute "wpd"`,
+		`WPDucker ${latest} successfully installed. Please restart terminal and try to execute "wpd"`,
 	);
 
 	classDependencyChecker.check();

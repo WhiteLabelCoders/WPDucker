@@ -67,7 +67,7 @@ class classCommandProjectInit extends classCommand {
 	}
 }
 
-const meta: TCommandMeta = {
+const meta: TCommandMeta<classCommandProjectInit> = {
 	phrase,
 	documentation: commandProjectInitDocs,
 	class: classCommandProjectInit,

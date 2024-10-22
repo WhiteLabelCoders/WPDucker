@@ -1,9 +1,9 @@
 // Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
+import { GH_API_CLIENT_CREDENTIALS } from '../../constants/GH_API_CLIENT_CREDENTIALS.ts';
 import { logger } from '../../global/logger.ts';
 import { classDatabase } from '../database/database.ts';
-import { IReleaseByTagName } from './release_by_tag_name.d.ts';
-import { IReleases } from './releases_list.d.ts';
+import { type IRelease, IReleases } from './releases_list.d.ts';
 
 /* The `classGitHubApiClient` is a TypeScript class that provides methods for fetching releases from a
 GitHub repository, caching the responses, and retrieving cached data. */
@@ -17,11 +17,14 @@ export class classGitHubApiClient {
 	 * @param args - An object containing the following properties:
 	 */
 	constructor(
-		args: { github: { owner: string; repo: string; apiUrl: string }; database: classDatabase },
+		args: { github?: { owner: string; repo: string; apiUrl: string }; database: classDatabase },
 	) {
 		logger.debugFn(arguments);
 
-		this.github = args.github;
+		const _github = args.github || GH_API_CLIENT_CREDENTIALS;
+		logger.debugVar('_github', _github);
+
+		this.github = _github;
 		logger.debugVar('this.github', this.github);
 
 		this.database = args.database;
@@ -37,7 +40,7 @@ export class classGitHubApiClient {
 	 * the cache object should be considered expired and should not be used.
 	 * @returns An object with properties "data" and "expiration" is being returned.
 	 */
-	public getCacheObject(data: string, expiration: number) {
+	public getCacheObject(data: any, expiration: number) {
 		logger.debugFn(arguments);
 
 		const cacheObj = {
@@ -60,7 +63,7 @@ export class classGitHubApiClient {
 	 * since the Unix epoch. If not provided, the default expiration time is set to 5 minutes (1000
 	 * milliseconds * 60 seconds * 5 minutes).
 	 */
-	public async addCache(id: string, data: string, expiration?: number) {
+	public async addCache(id: string, data: any, expiration?: number) {
 		logger.debugFn(arguments);
 
 		const _expiration = Date.now() + (1000 * 60 * 5);
@@ -88,112 +91,117 @@ export class classGitHubApiClient {
 		);
 		logger.debugVar('cache', cache);
 
-		if (Date.now() > (cache?.expiration || 0)) {
+		if (Date.now() > (cache?.value?.expiration || 0)) {
 			await this.database.removePersistentKey(id);
 			return undefined;
 		}
 
-		const value = cache.data;
+		const value = cache?.value?.data;
 		logger.debugVar('value', value);
 
 		return value;
 	}
 
 	/**
-	 * The function fetches releases from a GitHub repository, checks if the response is cached, and
-	 * returns the releases either from the cache or by making a request to the GitHub API.
-	 * @returns a Promise that resolves to an array of IReleases objects.
+	 * This TypeScript function fetches a list of releases from a GitHub repository, caches the response,
+	 * and returns the releases.
+	 * @returns The `fetchReleases` function returns an array of release objects (`IRelease[]`).
 	 */
 	public async fetchReleases() {
 		logger.debugFn(arguments);
 
-		const cacheId = `${this.github.owner}-${this.github.repo}-fetchReleases`;
+		const cacheId = `ListOfReleases`;
 		logger.debugVar('cacheId', cacheId);
 
 		const cache = await this.getCache(cacheId);
 		logger.debugVar('cache', cache);
 
 		if (cache) {
-			const cachedResponse = JSON.parse(cache) as IReleases[];
+			const cachedResponse = cache as IReleases[];
 			logger.debugVar('cachedResponse', cachedResponse);
 
 			return cachedResponse;
 		}
 
-		const url =
-			`${this.github.apiUrl}/repos/${this.github.owner}/${this.github.repo}/releases?per_page=20&page=1`;
-		logger.debugVar('url', url);
+		const releases: IRelease[] = [];
+		logger.debugVar('releases', releases);
 
-		const headers = {};
-		logger.debugVar('headers', headers);
+		let page = 1;
+		logger.debugVar('page', page);
 
-		const req = await fetch(url, {
-			method: 'GET',
-			headers,
-		});
-		logger.debugVar('req', req);
+		const perPage = 100;
+		logger.debugVar('perPage', perPage);
 
-		if (req.status.toString().slice(0, 1) != '2') {
-			const message = (await req.json())?.message || req;
-			logger.debugVar('message', message);
+		while (true) {
+			const url =
+				`${this.github.apiUrl}/repos/${this.github.owner}/${this.github.repo}/releases?per_page=${perPage}&page=${page}`;
+			logger.debugVar('url', url);
 
-			throw message;
+			const headers = {};
+			logger.debugVar('headers', headers);
+
+			const req = await fetch(url, {
+				method: 'GET',
+				headers,
+			});
+			logger.debugVar('req', req);
+
+			if (req.status.toString().slice(0, 1) != '2') {
+				const message = (await req.json())?.message || req;
+				logger.debugVar('message', message);
+
+				throw message;
+			}
+
+			const jsonResponse: IReleases[] = await req.json();
+			logger.debugVar('jsonResponse', jsonResponse);
+
+			jsonResponse.forEach((release) => {
+				const fitRelease = {
+					tag_name: release.tag_name,
+					published_at: release.published_at,
+					assets: release.assets.map((asset) => {
+						return {
+							name: asset.name,
+							browser_download_url: asset.browser_download_url,
+						};
+					}),
+				};
+				logger.debugVar('fitRelease', fitRelease);
+
+				releases.push(fitRelease);
+				logger.debugVar('releases', releases);
+			});
+
+			if (jsonResponse.length < perPage) {
+				break;
+			}
+
+			page++;
+			logger.debugVar('page', page);
 		}
 
-		const jsonResponse: Promise<IReleases[]> = req.json();
-		logger.debugVar('jsonResponse', jsonResponse);
+		await this.addCache(cacheId, releases);
 
-		await this.addCache(cacheId, JSON.stringify(await jsonResponse));
-
-		return jsonResponse;
+		return releases;
 	}
 
 	/**
-	 * The function fetches a release from a GitHub repository based on a given tag name, and caches the
-	 * response for future use.
-	 * @param {string} tagName - The `tagName` parameter is a string that represents the name of the tag
-	 * for which you want to fetch the release.
-	 * @returns a Promise that resolves to an object of type IReleaseByTagName.
+	 * This function fetches a release by its tag name asynchronously.
+	 * @param {string} tagName - The `fetchReleaseByTagName` function is designed to fetch a release by
+	 * its tag name. The `tagName` parameter is a string that represents the tag name of the release you
+	 * want to retrieve.
+	 * @returns The `fetchReleaseByTagName` function is returning the release object that matches the
+	 * provided `tagName` from the list of releases fetched by the `fetchReleases` function.
 	 */
 	public async fetchReleaseByTagName(tagName: string) {
 		logger.debugFn(arguments);
 
-		const cacheId = `${this.github.owner}-${this.github.repo}-fetchReleaseByTagName-${tagName}`;
-		logger.debugVar('cacheId', cacheId);
+		const release = (await this.fetchReleases()).find((predicate) =>
+			predicate.tag_name === tagName
+		);
+		logger.debugVar('release', release);
 
-		const cache = await this.getCache(cacheId);
-		logger.debugVar('cache', cache);
-
-		if (cache) {
-			const cachedResponse = JSON.parse(cache) as IReleaseByTagName;
-			logger.debugVar('cachedResponse', cachedResponse);
-
-			return cachedResponse;
-		}
-
-		const url =
-			`${this.github.apiUrl}/repos/${this.github.owner}/${this.github.repo}/releases/tags/${tagName}`;
-		logger.debugVar('url', url);
-
-		const headers = {};
-		logger.debugVar('headers', headers);
-
-		const req = await fetch(url, {
-			method: 'GET',
-			headers,
-		});
-		logger.debugVar('req', req);
-
-		if (req.status == 404) {
-			await req.body?.cancel();
-			throw `Not found wpd release by tag name "${tagName}"!`;
-		}
-
-		const jsonResponse: Promise<IReleaseByTagName> = req.json();
-		logger.debugVar('jsonResponse', jsonResponse);
-
-		await this.addCache(cacheId, JSON.stringify(await jsonResponse));
-
-		return jsonResponse;
+		return release;
 	}
 }
