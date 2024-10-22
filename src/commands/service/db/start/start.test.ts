@@ -15,7 +15,18 @@ Deno.test('commandServiceStart', async (t) => {
 
     Deno.mkdirSync(testDir);
 
-    const produceCommand = () => prepareCmd(_commandMeta, ['--debug']);
+    const produceCommand = () => {
+        const cmd = prepareCmd(_commandMeta, ['--debug']);
+
+        cmd.dbServer.sqlLiteDatabase.destroy();
+
+        cmd.dbServerSocketPath = `${testDir}/db.sock`;
+        cmd.dbPath = `${testDir}`;
+
+        cmd.recreateDbServer();
+
+        return cmd;
+    };
 
     const startServer = async (command: ReturnType<typeof produceCommand>, testName: string) => {
         assert(
