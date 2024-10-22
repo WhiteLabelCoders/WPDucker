@@ -5,7 +5,7 @@ import {
     sqlLiteSchema,
     sqlLiteSchemaTable,
 } from '../database_sqllite_schema/database_sqllite_schema.d.ts';
-import { pathExist } from '../../utils/path_exist/path_exist.ts';
+import { pathExistSync } from '../../utils/path_exist/path_exist.ts';
 
 export class classDatabaseSqlLite {
     public schema: sqlLiteSchema;
@@ -31,10 +31,10 @@ export class classDatabaseSqlLite {
         this.init();
     }
 
-    async ensureDbDirExists() {
+    ensureDbDirExists() {
         logger.debugFn(arguments);
 
-        if (!await pathExist(this.path)) {
+        if (!pathExistSync(this.path)) {
             Deno.mkdirSync(this.path, { recursive: true });
             logger.debug('Database directory created');
         }
