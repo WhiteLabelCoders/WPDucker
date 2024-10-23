@@ -4,23 +4,39 @@ import meta from '../../commands/service/db/start/start.ts';
 import { CLI_DIR } from '../../constants/CLI_DIR.ts';
 import { logger } from '../../global/logger.ts';
 import { _ } from '../../utils/lodash/lodash.ts';
-import { pathExist } from '../../utils/path_exist/path_exist.ts';
+import { pathExist, pathExistSync } from '../../utils/path_exist/path_exist.ts';
 import { shell } from '../../utils/shell/shell.ts';
 
 export class classDatabaseService {
-    private name: string;
-    private execPath: string = '';
-    private description: string = '';
-    private homeDir: string;
+    private inputName;
+    private execPath;
+    private execArgs;
+    private description;
+    private homeDir;
+    private stdOutPath;
+    private stdErrPath;
 
-    constructor(args: { name: string; description: string; execPath: string; homeDir?: string }) {
+    constructor(
+        args: {
+            name: string;
+            description: string;
+            execPath: string;
+            execArgs: string[];
+            homeDir?: string;
+            stdOutPath: string;
+            stdErrPath: string;
+        },
+    ) {
         logger.debugFn(arguments);
 
-        this.name = args.name;
-        logger.debugVar(`this.name`, this.name);
+        this.inputName = args.name;
+        logger.debugVar(`this.inputName`, this.inputName);
 
         this.execPath = args.execPath;
         logger.debugVar(`this.execPath`, this.execPath);
+
+        this.execArgs = args.execArgs;
+        logger.debugVar(`this.execArgs`, this.execArgs);
 
         this.description = args.description;
         logger.debugVar(`this.description`, this.description);
@@ -32,6 +48,12 @@ export class classDatabaseService {
         }
 
         this.homeDir = _homeDir;
+
+        this.stdOutPath = args.stdOutPath;
+        logger.debugVar(`this.stdOutPath`, this.stdOutPath);
+
+        this.stdErrPath = args.stdErrPath;
+        logger.debugVar(`this.stdErrPath`, this.stdErrPath);
     }
 
     public async install(run: boolean = true) {
@@ -44,6 +66,24 @@ export class classDatabaseService {
         }
     }
 
+    public async uninstall() {
+        logger.debugFn(arguments);
+
+        await this.stopService();
+
+        const filePath = this.getServiceFilePath();
+        logger.debugVar('filePath', filePath);
+
+        if (!filePath) {
+            throw `Unsupported OS: ${Deno.build.os}`;
+        }
+
+        if (await pathExist(filePath)) {
+            Deno.removeSync(filePath);
+            logger.info(`Service file removed: ${filePath}`);
+        }
+    }
+
     public getServiceFilePath() {
         logger.debugFn(arguments);
 
@@ -52,13 +92,13 @@ export class classDatabaseService {
 
         switch (os) {
             case 'darwin':
-                return `${this.homeDir}/Library/LaunchAgents/${this.name}.plist`;
+                return `${this.homeDir}/Library/LaunchAgents/${this.getServiceName()}.plist`;
 
             case 'linux':
-                return `${this.homeDir}/.config/systemd/user/${this.name}.service`;
+                return `${this.homeDir}/.config/systemd/user/${this.getServiceName()}.service`;
 
             default:
-                return;
+                throw `Unsupported OS: ${os}`;
         }
     }
 
@@ -76,7 +116,25 @@ export class classDatabaseService {
                 return this.generateServiceFileContentForLinux();
 
             default:
-                return;
+                throw `Unsupported OS: ${os}`;
+        }
+    }
+
+    public getServiceName() {
+        logger.debugFn(arguments);
+
+        const os = Deno.build.os;
+        logger.debugVar('os', os);
+
+        switch (os) {
+            case 'darwin':
+                return `com.wpd.${this.inputName}`;
+
+            case 'linux':
+                return `${this.inputName}`;
+
+            default:
+                throw `Unsupported OS: ${os}`;
         }
     }
 
@@ -93,19 +151,6 @@ export class classDatabaseService {
             throw `Unsupported OS: ${Deno.build.os}`;
         }
 
-        let currentContent = '';
-        logger.debugVar('currentContent', currentContent);
-
-        if (await pathExist(serviceFilePath)) {
-            currentContent = await Deno.readTextFile(serviceFilePath);
-            logger.debugVar('currentContent', currentContent);
-        }
-
-        if (currentContent === serviceFileContent) {
-            logger.info(`Service file already exists: ${serviceFilePath}`);
-            return;
-        }
-
         const serviceFileDirPath = serviceFilePath.substring(0, serviceFilePath.lastIndexOf('/'));
         logger.debugVar('serviceFileDirPath', serviceFileDirPath);
 
@@ -116,6 +161,8 @@ export class classDatabaseService {
 
         logger.info(`Creating service file: ${serviceFilePath}`);
         await Deno.writeTextFile(serviceFilePath, serviceFileContent);
+
+        Deno.chmodSync(serviceFilePath, 0o644);
     }
 
     public generateServiceFileContentForDarwin() {
@@ -132,13 +179,13 @@ export class classDatabaseService {
         content += `<plist version="1.0">${nl}`;
         content += `    <dict>${nl}`;
         content += `        <key>Label</key>${nl}`;
-        content += `        <string>${this.name}</string>${nl}`;
+        content += `        <string>${this.getServiceName()}</string>${nl}`;
         content += `        <key>Description</key>${nl}`;
         content += `        <string>${this.description}</string>${nl}`;
         content += `        <key>ProgramArguments</key>${nl}`;
         content += `        <array>${nl}`;
         content += `            <string>${this.execPath}</string>${nl}`;
-        for (const arg of cmdStartArgs) {
+        for (const arg of this.execArgs) {
             content += `            <string>${arg}</string>${nl}`;
         }
         content += `        </array>${nl}`;
@@ -149,11 +196,9 @@ export class classDatabaseService {
         content += `        <key>ThrottleInterval</key>${nl}`;
         content += `        <integer>60</integer>${nl}`;
         content += `        <key>StandardOutPath</key>${nl}`;
-        content +=
-            `        <string>${CLI_DIR.localStorage}/logs/std/${this.name}.out.log</string>${nl}`;
+        content += `        <string>${this.stdOutPath}</string>${nl}`;
         content += `        <key>StandardErrorPath</key>${nl}`;
-        content +=
-            `        <string>${CLI_DIR.localStorage}/logs/std/${this.name}.err.log</string>${nl}`;
+        content += `        <string>${this.stdErrPath}</string>${nl}`;
         content += `    </dict>${nl}`;
         content += `</plist>${nl}`;
         content += ``;
@@ -177,9 +222,9 @@ export class classDatabaseService {
         content += `StartLimitBurst=3${nl}`;
         content += `StartLimitIntervalSec=60${nl}`;
         content +=
-            `StandardOutput=append:${CLI_DIR.localStorage}/logs/std/${this.name}.out.log${nl}`;
+            `StandardOutput=append:${CLI_DIR.localStorage}/logs/std/${this.getServiceName()}.out.log${nl}`;
         content +=
-            `StandardError=append:${CLI_DIR.localStorage}/logs/err/${this.name}.err.log${nl}`;
+            `StandardError=append:${CLI_DIR.localStorage}/logs/err/${this.getServiceName()}.err.log${nl}`;
         content += `${nl}`;
         content += `[Install]${nl}`;
         content += `WantedBy=default.target${nl}`;
@@ -188,11 +233,27 @@ export class classDatabaseService {
         return content;
     }
 
+    public ensureLogsFiles() {
+        logger.debugFn(arguments);
+
+        if (!pathExistSync(this.stdErrPath)) {
+            logger.debug(`Creating file: ${this.stdErrPath}`);
+            Deno.writeTextFileSync(this.stdErrPath, '');
+        }
+
+        if (!pathExistSync(this.stdOutPath)) {
+            logger.debug(`Creating file: ${this.stdOutPath}`);
+            Deno.writeTextFileSync(this.stdOutPath, '');
+        }
+    }
+
     public startService() {
         logger.debugFn(arguments);
 
         const os = Deno.build.os;
         logger.debugVar('os', os);
+
+        this.ensureLogsFiles();
 
         switch (os) {
             case 'darwin':
@@ -202,18 +263,78 @@ export class classDatabaseService {
                 return this.startServiceForLinux();
 
             default:
-                return;
+                throw `Unsupported OS: ${os}`;
         }
+    }
+
+    public stopService() {
+        logger.debugFn(arguments);
+
+        const os = Deno.build.os;
+        logger.debugVar('os', os);
+
+        switch (os) {
+            case 'darwin':
+                return this.stopServiceForDarwin();
+
+            case 'linux':
+                return this.stopServiceForLinux();
+
+            default:
+                throw `Unsupported OS: ${os}`;
+        }
+    }
+
+    public async getOsUserId() {
+        logger.debugFn(arguments);
+
+        const uid = (await shell('id', '-u')).trim();
+        logger.debugVar('uid', uid);
+
+        return uid;
+    }
+
+    public async isServiceLoaded() {
+        logger.debugFn(arguments);
+
+        let serviceIsLoaded = false;
+
+        const os = Deno.build.os;
+        logger.debugVar('os', os);
+
+        switch (os) {
+            case 'darwin':
+                try {
+                    await shell(
+                        'launchctl',
+                        'print',
+                        `gui/${await this.getOsUserId()}/${this.getServiceName()}`,
+                    );
+                    serviceIsLoaded = true;
+                } catch (error) {
+                    serviceIsLoaded = false;
+                }
+                break;
+            case 'linux':
+                throw `TO DO!`;
+
+            default:
+                throw `Unsupported OS: ${os}`;
+        }
+
+        logger.debugVar('serviceIsLoaded', serviceIsLoaded);
+
+        return serviceIsLoaded;
     }
 
     public async startServiceForDarwin() {
         logger.debugFn(arguments);
 
-        const cmd = [`launchctl`, `load`, `${this.getServiceFilePath()}`];
-        logger.debugVar('cmd', cmd);
+        if (await this.isServiceLoaded()) {
+            await shell(...[`launchctl`, `unload`, `-w`, `${this.getServiceFilePath()}`]);
+        }
 
-        const result = await shell(...cmd);
-        logger.info('Start database service for Darwin os:', result);
+        await shell(...[`launchctl`, `load`, `-w`, `${this.getServiceFilePath()}`]);
     }
 
     public async startServiceForLinux() {
@@ -222,7 +343,24 @@ export class classDatabaseService {
         const cmd = [`systemctl`, `start`, `${this.getServiceFilePath()}`];
         logger.debugVar('cmd', cmd);
 
+        await shell(...cmd);
+    }
+
+    public async stopServiceForDarwin() {
+        logger.debugFn(arguments);
+
+        await shell(...[`launchctl`, `unload`, `-w`, `${this.getServiceFilePath()}`]);
+
+        Deno.removeSync(this.getServiceFilePath());
+    }
+
+    public async stopServiceForLinux() {
+        logger.debugFn(arguments);
+
+        const cmd = [`systemctl`, `stop`, `${this.getServiceFilePath()}`];
+        logger.debugVar('cmd', cmd);
+
         const result = await shell(...cmd);
-        logger.info('Start database service for Linux os:', result);
+        logger.info('Stop database service for Linux os:', result);
     }
 }

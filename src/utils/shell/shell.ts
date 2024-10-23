@@ -17,8 +17,7 @@ export async function shell(...args: string[]) {
     if (!output.success) {
         const msg = new TextDecoder().decode(output.stderr);
 
-        logger.error('sh:', msg);
-        return false;
+        throw new Error(`Shell: failed to execute \`${args.join(' ')}\` with error: ${msg}`);
     }
 
     return new TextDecoder().decode(output.stdout);

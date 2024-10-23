@@ -11,6 +11,7 @@ import { DB_SERVER_SOCKET_PATH } from '../constants/DB_SERVER_SOCKET_PATH.ts';
 import { DB_SERVICE_NAME } from '../constants/DB_SERVICE_NAME.ts';
 import { logger } from '../global/logger.ts';
 import { generateUniqueBasename } from '../utils/generate_unique_basename/generate_unique_basename.ts';
+import meta from '../commands/service/db/start/start.ts';
 
 await (async function installer() {
 	const tmpDir = `${CLI_DIR.tmp}/${await generateUniqueBasename({ basePath: CLI_DIR.tmp })}`;
@@ -31,11 +32,17 @@ await (async function installer() {
 	logger.info('Installing latest version of WPDucker');
 	const latest = await cliVersionManager.useLatest();
 
+	const execArgs = meta.phrase.split(' ');
+	logger.debugVar('cmdStartArgs', execArgs);
+
 	logger.info(`Installing WPDucker database service`);
 	const dbService = new classDatabaseService({
 		name: DB_SERVICE_NAME,
 		description: 'WPDucker database service',
 		execPath: `${cliVersionManager.getDirInfo().main}/wpd`,
+		execArgs: execArgs,
+		stdOutPath: `${CLI_DIR.localStorage}/logs/wpddb/std.out.log`,
+		stdErrPath: `${CLI_DIR.localStorage}/logs/wpddb/std.err.log`,
 	});
 
 	await dbService.install(true);
