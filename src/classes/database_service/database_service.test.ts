@@ -7,53 +7,53 @@ import { pathExistSync } from '../../utils/path_exist/path_exist.ts';
 import { classDatabaseService } from './database_service.ts';
 
 Deno.test('classDatabaseService', async function testDatabaseService(t) {
-    const testDir = `${cwd()}/test_classDatabaseService`;
+	const testDir = `${cwd()}/test_classDatabaseService`;
 
-    if (!pathExistSync(testDir)) {
-        Deno.mkdirSync(testDir, { recursive: true });
-    }
+	if (!pathExistSync(testDir)) {
+		Deno.mkdirSync(testDir, { recursive: true });
+	}
 
-    const DB_SERVICE_NAME = 'test_wpducker_db';
-    const EXEC_FILE_PATH = `${testDir}/service.sh`;
-    const OUTPUT_FILE = `${testDir}/output.txt`;
-    const STD_ERROR_FILE = `${testDir}/std.error.txt`;
-    const STD_OUTPUT_FILE = `${testDir}/std.output.txt`;
+	const DB_SERVICE_NAME = 'test_wpducker_db';
+	const EXEC_FILE_PATH = `${testDir}/service.sh`;
+	const OUTPUT_FILE = `${testDir}/output.txt`;
+	const STD_ERROR_FILE = `${testDir}/std.error.txt`;
+	const STD_OUTPUT_FILE = `${testDir}/std.output.txt`;
 
-    Deno.writeTextFileSync(EXEC_FILE_PATH, `echo "Hello World!" > "${OUTPUT_FILE}"`);
+	Deno.writeTextFileSync(EXEC_FILE_PATH, `echo "Hello World!" > "${OUTPUT_FILE}"`);
 
-    ensureExecutePermissions(EXEC_FILE_PATH);
+	ensureExecutePermissions(EXEC_FILE_PATH);
 
-    const dbService = new classDatabaseService({
-        name: DB_SERVICE_NAME,
-        description: 'WPDucker database service',
-        execPath: `${EXEC_FILE_PATH}`,
-        execArgs: [],
-        stdErrPath: STD_ERROR_FILE,
-        stdOutPath: STD_OUTPUT_FILE,
-    });
+	const dbService = new classDatabaseService({
+		name: DB_SERVICE_NAME,
+		description: 'WPDucker database service',
+		execPath: `${EXEC_FILE_PATH}`,
+		execArgs: [],
+		stdErrPath: STD_ERROR_FILE,
+		stdOutPath: STD_OUTPUT_FILE,
+	});
 
-    await t.step('install', async function testDatabaseServiceInstall() {
-        await dbService.install(true);
+	await t.step('install', async function testDatabaseServiceInstall() {
+		await dbService.install(true);
 
-        assert(await dbService.isServiceLoaded(), 'Service not found!');
-    });
+		assert(await dbService.isServiceLoaded(), 'Service not found!');
+	});
 
-    await t.step('re-install', async function testDatabaseServiceInstall() {
-        await dbService.install(true);
+	await t.step('re-install', async function testDatabaseServiceInstall() {
+		await dbService.install(true);
 
-        assert(await dbService.isServiceLoaded(), 'Service not found!');
-    });
+		assert(await dbService.isServiceLoaded(), 'Service not found!');
+	});
 
-    await t.step('uninstall', async function testDatabaseServiceUninstall() {
-        await dbService.uninstall();
+	await t.step('uninstall', async function testDatabaseServiceUninstall() {
+		await dbService.uninstall();
 
-        assert(
-            !await dbService.isServiceLoaded(),
-            'Service found!',
-        );
-    });
+		assert(
+			!await dbService.isServiceLoaded(),
+			'Service found!',
+		);
+	});
 
-    if (pathExistSync(testDir)) {
-        Deno.removeSync(testDir, { recursive: true });
-    }
+	if (pathExistSync(testDir)) {
+		Deno.removeSync(testDir, { recursive: true });
+	}
 });
