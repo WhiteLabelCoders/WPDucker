@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 export const releasesMockup = [
     {
         'tag_name': '0.1.0',
