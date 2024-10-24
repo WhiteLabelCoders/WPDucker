@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { classDatabase } from '../../classes/database/database.ts';
 import { classGitHubApiClient } from '../../classes/github/gh_api_client.ts';
 import { IRelease, IReleases } from '../../classes/github/releases_list.d.ts';
