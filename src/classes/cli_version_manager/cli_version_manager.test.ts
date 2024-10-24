@@ -4,12 +4,12 @@ import { CLI_PVFB } from '../../constants/CLI_PVFB.ts';
 import createProjectStructure from '../../utils/create_project_structure/create_project_structure.ts';
 import { cwd } from '../../utils/cwd/cwd.ts';
 import { classCliVersionManager } from './cli_version_manager.ts';
-import { classGitHubApiClient } from '../github/gh_api_client.ts';
 import { getError } from '../../utils/get_error/get_error.ts';
 import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
 import { _ } from '../../utils/lodash/lodash.ts';
 import { pathExist } from '../../utils/path_exist/path_exist.ts';
 import { getDbForTests } from '../../utils/get_db_for_tests/get_db_for_tests.ts';
+import { getGhApiClientForTests } from '../../utils/get_gh_api_client_for_tests/get_gh_api_client_for_tests.ts';
 
 Deno.test('classCliVersionManager', async function testClassCliVersionManager() {
 	const testDir = `${cwd()}/test_classCliVersionManager`;
@@ -30,7 +30,7 @@ Deno.test('classCliVersionManager', async function testClassCliVersionManager() 
 
 	const { database, server } = await getDbForTests();
 
-	const gitHubApiClient = new classGitHubApiClient({ database });
+	const gitHubApiClient = getGhApiClientForTests(database);
 
 	const cliVersionManager = new classCliVersionManager({
 		cliDir: testData.dir.cli,

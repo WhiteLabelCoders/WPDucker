@@ -3,13 +3,13 @@
 import { logger } from '../../global/logger.ts';
 import { cwd } from '../../utils/cwd/cwd.ts';
 import { getDbForTests } from '../../utils/get_db_for_tests/get_db_for_tests.ts';
+import { getGhApiClientForTests } from '../../utils/get_gh_api_client_for_tests/get_gh_api_client_for_tests.ts';
 import { parseCliArgs } from '../../utils/parser/parser.ts';
 import { classCliVersionManager } from '../cli_version_manager/cli_version_manager.ts';
 import { TCommandArgs } from '../command/command.d.ts';
 import { classCommand } from '../command/command.ts';
 import { classCommandInvoker } from '../command_invoker/command_invoker.ts';
 import { classCommandsRepository } from '../command_repository/command_repository.ts';
-import { classGitHubApiClient } from '../github/gh_api_client.ts';
 import { classCommandInvokerFacade } from './command_invoker_facade.ts';
 
 Deno.test('classCommandInvokerFacade', async function testClassCommandInvokerFacade() {
@@ -31,7 +31,7 @@ Deno.test('classCommandInvokerFacade', async function testClassCommandInvokerFac
 	const commandArguments = parseCliArgs(['./', '--debug']);
 	const { database, server } = await getDbForTests();
 
-	const gitHubApiClient = new classGitHubApiClient({ database });
+	const gitHubApiClient = getGhApiClientForTests(database);
 	const cliVersionManager = new classCliVersionManager({
 		cliDir: testData.dir.cli,
 		gitHubApiClient,
