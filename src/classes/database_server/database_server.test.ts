@@ -1,6 +1,6 @@
 // Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
-import { assert } from 'https://deno.land/std@0.224.0/assert/assert.ts';
+import { assert } from '@std/assert';
 import { cwd } from '../../utils/cwd/cwd.ts';
 import { pathExist } from '../../utils/path_exist/path_exist.ts';
 import { classDatabaseSqlLite } from '../database_sqllite/database_sqllite.ts';

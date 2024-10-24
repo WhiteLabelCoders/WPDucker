@@ -1,6 +1,6 @@
 // Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
-import { assertEquals } from 'https://deno.land/std@0.201.0/assert/assert_equals.ts';
+import { assertEquals } from '@std/assert';
 import { getCallingFunctionName } from './calling_function_name.ts';
 
 Deno.test('getCallingFunctionName', function testGetCallingFunctionName() {

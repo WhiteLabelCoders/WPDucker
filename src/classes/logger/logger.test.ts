@@ -1,11 +1,9 @@
 // Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
-import { assertEquals } from 'https://deno.land/std@0.201.0/assert/assert_equals.ts';
 import { classLogger } from './logger.ts';
-import { assertGreater } from 'https://deno.land/std@0.201.0/assert/assert_greater.ts';
 import { ansiColors } from './colors.ts';
 import { noError } from '../../utils/no_error/no_error.ts';
-import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
+import { assert, assertEquals, assertGreater } from '@std/assert';
 import { _ } from '../../utils/lodash/lodash.ts';
 
 Deno.test('classLogger', async function testClassLogger() {

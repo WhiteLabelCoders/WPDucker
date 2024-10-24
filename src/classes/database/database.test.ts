@@ -1,7 +1,7 @@
 // Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
 import { getError } from '../../utils/get_error/get_error.ts';
-import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
+import { assert } from '@std/assert';
 import { cwd } from '../../utils/cwd/cwd.ts';
 import { classDatabase } from './database.ts';
 import { pathExist } from '../../utils/path_exist/path_exist.ts';

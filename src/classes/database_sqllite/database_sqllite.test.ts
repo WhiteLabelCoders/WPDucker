@@ -1,12 +1,11 @@
 // Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
-import { assertEquals } from 'https://deno.land/std@0.224.0/assert/assert_equals.ts';
+import { assert, assertEquals } from '@std/assert';
 import { cwd } from '../../utils/cwd/cwd.ts';
 import { pathExist } from '../../utils/path_exist/path_exist.ts';
 import { classDatabaseSqlLiteSchema } from '../database_sqllite_schema/database_sqllite_schema.ts';
 import { classDatabaseSqlLite } from './database_sqllite.ts';
-import { Row } from 'https://deno.land/x/sqlite@v3.8/mod.ts';
-import { assert } from 'https://deno.land/std@0.224.0/assert/assert.ts';
+import { Row } from 'https://deno.land/x/sqlite@v3.9.1/mod.ts';
 
 Deno.test('classDatabaseSqlLite', async function testClassDatabaseSqlLite(t) {
     const testPath = `${cwd()}/test_classDatabaseSqlLite`;

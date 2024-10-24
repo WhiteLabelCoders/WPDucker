@@ -3,9 +3,9 @@
 import { classCommand } from './command.ts';
 import { TCommandArgs } from './command.d.ts';
 import { parseCliArgs } from '../../utils/parser/parser.ts';
-import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
+import { assert } from '@std/assert';
 import { noError } from '../../utils/no_error/no_error.ts';
-import { returnsNext, stub } from 'https://deno.land/std@0.220.0/testing/mock.ts';
+import { returnsNext, stub } from '@std/testing/mock';
 
 Deno.test('classCommand', async function testClassCommand(t) {
 	class myCommand extends classCommand {

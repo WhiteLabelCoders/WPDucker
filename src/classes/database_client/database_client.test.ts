@@ -5,7 +5,7 @@ import { cwd } from '../../utils/cwd/cwd.ts';
 import { getError } from '../../utils/get_error/get_error.ts';
 import { pathExist } from '../../utils/path_exist/path_exist.ts';
 import { classDatabaseClient } from './database_client.ts';
-import { assert } from 'https://deno.land/std@0.224.0/assert/mod.ts';
+import { assert } from '@std/assert';
 import { classDatabaseServer } from '../database_server/database_server.ts';
 import { classDatabaseSqlLite } from '../database_sqllite/database_sqllite.ts';
 import { classDatabaseSqlLiteSchema } from '../database_sqllite_schema/database_sqllite_schema.ts';

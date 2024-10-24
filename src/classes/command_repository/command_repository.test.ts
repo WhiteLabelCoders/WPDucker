@@ -1,6 +1,6 @@
 // Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
-import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
+import { assert } from '@std/assert';
 import { TCommandArgs } from '../command/command.d.ts';
 import { classCommand } from '../command/command.ts';
 import { classCommandsRepository } from './command_repository.ts';

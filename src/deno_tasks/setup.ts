@@ -1,7 +1,7 @@
 // Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
 import { logger } from '../global/logger.ts';
-import { ensureFile } from 'https://deno.land/std@0.224.0/fs/mod.ts';
+import { ensureFile } from '@std/fs';
 
 const denoCommand = async (options: Deno.CommandOptions) => {
   logger.info(`Execute deno command ${options.args ? `"${options.args.join(' ')}"` : ''}`);
