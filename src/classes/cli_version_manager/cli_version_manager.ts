@@ -8,9 +8,9 @@ import { downloadFile } from '../../utils/download_file/download_file.ts';
 import { getCurrentCliVersion } from '../../utils/get_current_cli_version/get_current_cli_version.ts';
 import { getCliVersionRequiredByProject } from '../../utils/get_cli_version_required_by_project/get_cli_version_required_by_project.ts';
 import { ensureExecutePermissions } from '../../utils/ensure_execute_permissions/ensure_execute_permissions.ts';
-import { decompress } from 'https://deno.land/x/zip@v1.2.5/mod.ts';
 import { pathExist } from '../../utils/path_exist/path_exist.ts';
 import { version } from './cli_version_manager.d.ts';
+import { shell } from '../../utils/shell/shell.ts';
 
 /* The `classCliVersionManager` class is a TypeScript class that represents the WPDucker Version Manager, which is
 responsible for managing the versions of the "wpd" software by downloading and extracting
@@ -524,7 +524,7 @@ export class classCliVersionManager {
 
 		logger.info(`Extracting into ${destDir}`);
 
-		await decompress(downloadDetails.filename, destDir);
+		await shell(...['unzip', downloadDetails.filename, '-d', destDir]);
 
 		for (const dirEntry of Deno.readDirSync(destDir)) {
 			logger.debugVar('dirEntry', dirEntry);

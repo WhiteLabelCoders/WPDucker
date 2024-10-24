@@ -143,7 +143,7 @@ class classCommandDbServiceStart extends classCommand {
                 await sleep(250);
             }
         } catch (error) {
-            _throw = error;
+            _throw = error as Error;
         }
 
         unregisterOSSignals();

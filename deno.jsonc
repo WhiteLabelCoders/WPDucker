@@ -2,9 +2,9 @@
 	"tasks": {
 		"setup": "deno run --allow-run --allow-read --allow-write ./src/deno_tasks/setup.ts",
 		"run": "deno run --allow-read --allow-run --allow-write --allow-env --allow-net ./src/entry.ts",
-		"dev": "deno task pre:compile; deno run --allow-read --allow-run ./src/deno_tasks/dev.ts --allow-read --allow-run --allow-write --allow-env --allow-net --trace-leaks",
+		"dev": "deno task pre:compile; deno run --allow-read --allow-run ./src/deno_tasks/dev.ts --allow-read --allow-run --allow-write --allow-env --allow-net",
 		"copyrights": "deno task pre:compile; deno run --allow-read --allow-write ./src/deno_tasks/copyrights.ts",
-		"test": "deno task pre:compile && deno test --allow-read --allow-run --allow-write --allow-env --allow-net --trace-leaks --coverage=./.test_coverage ./src/**/*.test.ts -- --debug",
+		"test": "deno task pre:compile && deno test --allow-read --allow-run --allow-write --allow-env --allow-net --coverage=./.test_coverage ./src/**/*.test.ts -- --debug",
 		"client": "deno run --allow-net --allow-read --allow-write ./src/client.ts",
 		"server": "deno run --allow-net --allow-read --allow-write ./src/server.ts",
 		"test:report": "deno run --allow-read --allow-env --allow-write --allow-run ./src/deno_tasks/test_coverage_report.ts -- --debug",

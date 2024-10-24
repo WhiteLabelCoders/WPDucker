@@ -4,7 +4,7 @@ import { classDatabase } from '../../classes/database/database.ts';
 import { classGitHubApiClient } from '../../classes/github/gh_api_client.ts';
 import { IRelease, IReleases } from '../../classes/github/releases_list.d.ts';
 import { logger } from '../../global/logger.ts';
-import { cwd } from '../cwd/cwd.ts';
+import { releasesMockup } from './releases.ts';
 
 export function getGhApiClientForTests(db: classDatabase) {
     const client = new classGitHubApiClient({ database: db });
@@ -24,9 +24,7 @@ export function getGhApiClientForTests(db: classDatabase) {
             return cachedResponse;
         }
 
-        const releases: IRelease[] = JSON.parse(
-            Deno.readTextFileSync(`${cwd()}/src/utils/get_gh_api_client_for_tests/releases.json`),
-        );
+        const releases: IRelease[] = releasesMockup;
         logger.debugVar('releases', releases);
 
         await this.addCache(cacheId, releases);

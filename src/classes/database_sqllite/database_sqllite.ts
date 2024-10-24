@@ -1,6 +1,6 @@
 // Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
-import { DB } from 'https://deno.land/x/sqlite@v3.8/mod.ts';
+import { DB } from 'https://deno.land/x/sqlite@v3.9.1/mod.ts';
 import { cwd } from '../../utils/cwd/cwd.ts';
 import { logger } from '../../global/logger.ts';
 import {

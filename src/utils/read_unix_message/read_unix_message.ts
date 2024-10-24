@@ -11,7 +11,7 @@ export async function readUnixMessage(conn: Deno.UnixConn) {
     let totalBytesRead = 0;
 
     while (true) {
-        const buffer = new Uint8Array(1024 * 128);
+        const buffer = new Uint8Array(1024 * 6);
         const bytesRead = await conn.read(buffer);
         logger.debugVar('buffer', buffer);
         logger.debugVar('bytesRead', bytesRead);

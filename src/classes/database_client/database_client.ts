@@ -59,7 +59,7 @@ export class classDatabaseClient {
 
             _response = response;
         } catch (error) {
-            _throw = error;
+            _throw = error as Error;
         }
 
         connection.close();
