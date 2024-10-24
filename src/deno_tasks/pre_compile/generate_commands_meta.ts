@@ -1,9 +1,11 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { logger } from '../../global/logger.ts';
 import { recursiveReaddir } from 'https://deno.land/x/recursive_readdir@v2.0.0/mod.ts';
-import { extname } from 'https://deno.land/std@0.220.0/path/mod.ts';
+import { extname } from '@std/path/extname';
 import { pathExist } from '../../utils/path_exist/path_exist.ts';
 
-const generateEmptyCommandsMetaFile = async (commandsMetaFile: string) => {
+export const generateEmptyCommandsMetaFile = async (commandsMetaFile: string) => {
 	logger.debug('Generate empty commands meta file', commandsMetaFile);
 
 	await Deno.writeTextFile(commandsMetaFile, 'export const COMMANDS_META = [];\n');
@@ -64,6 +66,5 @@ const generateCommandsMetaFile = async (commandsRootDir: string, commandsMetaFil
 };
 
 export const generateCommandsMeta = async (commandsRootDir: string, commandsMetaFile: string) => {
-	await generateEmptyCommandsMetaFile(commandsMetaFile);
 	await generateCommandsMetaFile(commandsRootDir, commandsMetaFile);
 };

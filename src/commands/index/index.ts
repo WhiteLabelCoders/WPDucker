@@ -1,7 +1,9 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { TCommandArgs, TCommandMeta } from '../../classes/command/command.d.ts';
 import { classCommand } from '../../classes/command/command.ts';
 import { logger } from '../../global/logger.ts';
-import { commandDefaultDocs } from './index.docs.ts';
+import { commandDefaultDocs, description } from './index.docs.ts';
 
 const phrase = '';
 class classCommandDefault extends classCommand {
@@ -17,8 +19,9 @@ class classCommandDefault extends classCommand {
 	}
 }
 
-const meta: TCommandMeta = {
+const meta: TCommandMeta<classCommandDefault> = {
 	phrase,
+	description,
 	documentation: commandDefaultDocs,
 	class: classCommandDefault,
 };

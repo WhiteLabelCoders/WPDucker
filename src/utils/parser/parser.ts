@@ -1,6 +1,8 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { COMMANDS_META } from '../../pre_compiled/__commands_meta.ts';
 import { logger } from '../../global/logger.ts';
-import { isUndefined } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
+import { _ } from '../lodash/lodash.ts';
 
 /**
  * The `parseCliArgs` function parses command-line arguments in Deno and categorizes them into boolean
@@ -9,8 +11,8 @@ import { isUndefined } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
  * command-line arguments passed to a Deno script.
  * @returns The function `parseCliArgs` returns an object with the following properties:
  */
-export const parseCliArgs = (denoArgs = Deno.args) => {
-	logger.debug(`Var denoArgs:`, denoArgs);
+export function parseCliArgs(denoArgs = Deno.args) {
+	logger.debugFn(arguments);
 
 	const parsed = {
 		commandPhrase: '',
@@ -55,7 +57,7 @@ export const parseCliArgs = (denoArgs = Deno.args) => {
 
 			const result = parsed.keyValue.filter((row) => searchKey.includes(row[0]));
 
-			if (isUndefined(result?.[0]?.[1])) {
+			if (_.isUndefined(result?.[0]?.[1])) {
 				return result;
 			}
 
@@ -73,6 +75,7 @@ export const parseCliArgs = (denoArgs = Deno.args) => {
 		},
 		primitive: denoArgs,
 	};
+	logger.debugVar('parsed', parsed);
 
 	denoArgs.forEach((value) => {
 		const isBoolean = /^(--|-)([A-z0-9-]+)/.test(value) && !/=+/.test(value);
@@ -113,5 +116,8 @@ export const parseCliArgs = (denoArgs = Deno.args) => {
 
 	parsed.args = parsed.args.filter((v, i) => v !== parsed.commandPhrase.split(' ')[i]);
 
-	return { ...parsed };
-};
+	const args = { ...parsed };
+	logger.debugVar('args', args);
+
+	return args;
+}

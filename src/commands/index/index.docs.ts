@@ -1,22 +1,28 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { DOCUMENTATION_COLOR_THEME } from '../../constants/DOCUMENTATION_COLOR_THEME.ts';
-import { generateDocumentation } from '../../utils/generate_documentation.ts';
-import commandProjectInitMeta from '../project/init/init.ts';
-import commandProjectRemoveMeta from '../project/remove/remove.ts';
-import { description as commandProjectInitDescription } from '../project/init/init.docs.ts';
-import { description as commandProjectRemoveDescription } from '../project/remove/remove.docs.ts';
+import { COMMANDS_META_FEED } from '../../pre_compiled/__commands_meta_feed.ts';
+import { generateDocumentation } from '../../utils/generate_documentation/generate_documentation.ts';
 
-const feedCommands: [string, string][] = [
-	[commandProjectInitMeta.phrase, commandProjectInitDescription],
-	[commandProjectRemoveMeta.phrase, commandProjectRemoveDescription],
-];
+const feedCommands = COMMANDS_META_FEED.sort((a, b) => {
+	if (a[0] < b[0]) {
+		return -1;
+	}
+	if (a[0] > b[0]) {
+		return 1;
+	}
+	return 0;
+});
 
-const feedOptions: [string | string[], string][] = [
+const feedOptions = [
 	[['-h', '--help'], 'Display documentation'],
 	[['-dbg', '--debug'], 'Display debug logs'],
 ];
+
+export const description = 'Main command';
 export const commandDefaultDocs = generateDocumentation({
 	usage: 'wpd [COMMANDS] [OPTIONS]',
-	description: '',
+	description: description,
 	commands: feedCommands,
 	arguments: [],
 	options: feedOptions,

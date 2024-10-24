@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { classCliVersionManager } from './classes/cli_version_manager/cli_version_manager.ts';
 import { classCommandInvoker } from './classes/command_invoker/command_invoker.ts';
 import { classCommandsRepository } from './classes/command_repository/command_repository.ts';
@@ -10,19 +12,17 @@ import { generateUniqueBasename } from './utils/generate_unique_basename/generat
 import { COMMANDS_META } from './pre_compiled/__commands_meta.ts';
 import { logger } from './global/logger.ts';
 import { emojify } from './utils/emojify/emojify.ts';
+import { DB_SCHEMA } from './constants/DB_SCHEMA.ts';
+import { DB_SERVER_SOCKET_PATH } from './constants/DB_SERVER_SOCKET_PATH.ts';
 
 try {
 	const tmpDir = `${CLI_DIR.tmp}/${await generateUniqueBasename({ basePath: CLI_DIR.tmp })}`;
 	const commandArguments = parseCliArgs(Deno.args);
-	const database = new classDatabase({ dirname: `${CLI_DIR.localStorage}` });
-	const gitHubApiClient = new classGitHubApiClient({
-		github: {
-			owner: 'WhiteLabelCoders',
-			repo: 'WPDucker',
-			apiUrl: 'https://api.github.com',
-		},
-		database,
+	const database = new classDatabase({
+		dbSchema: DB_SCHEMA,
+		dbServerSocketPath: DB_SERVER_SOCKET_PATH,
 	});
+	const gitHubApiClient = new classGitHubApiClient({ database });
 	const cliVersionManager = new classCliVersionManager({
 		cliDir: CLI_DIR,
 		gitHubApiClient,

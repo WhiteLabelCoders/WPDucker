@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 /**
  * The function `getOsAlias` returns an alias for the operating system and architecture combination, or
  * "Os not recognized" if the combination is not recognized.

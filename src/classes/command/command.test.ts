@@ -1,9 +1,11 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { classCommand } from './command.ts';
 import { TCommandArgs } from './command.d.ts';
 import { parseCliArgs } from '../../utils/parser/parser.ts';
-import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
+import { assert } from '@std/assert';
 import { noError } from '../../utils/no_error/no_error.ts';
-import { returnsNext, stub } from 'https://deno.land/std@0.220.0/testing/mock.ts';
+import { returnsNext, stub } from '@std/testing/mock';
 
 Deno.test('classCommand', async function testClassCommand(t) {
 	class myCommand extends classCommand {
@@ -39,7 +41,7 @@ Deno.test('classCommand', async function testClassCommand(t) {
 		assert(await noError(() => command._exec()), 'Command just exec');
 	});
 
-	await t.step(function testClassCommandGetOrAskForArgument() {
+	await t.step(async function testClassCommandGetOrAskForArgument() {
 		const argName = 'my-argument-custom';
 		const argName2 = 'my-argument-custom2';
 		const argVal = 'my custom value!';
@@ -54,16 +56,31 @@ Deno.test('classCommand', async function testClassCommand(t) {
 			documentation: testCommandDocs,
 		});
 
-		assert(command.getOrAskForArg(argName, askForArgMessage) == argVal, 'test arg value');
+		assert(
+			await command.getOrAskForArg({ name: argName, askMessage: askForArgMessage }) == argVal,
+			'test arg value',
+		);
 		const promptStub = stub(
 			globalThis,
 			'prompt',
 			returnsNext([argVal2, argVal3, argVal3, argVal3, null, argVal2]),
 		);
-		assert(command.getOrAskForArg(argName2, askForArgMessage) == argVal2, 'prompt asking');
-		assert(command.getOrAskForArg(argName2, askForArgMessage) == argVal3, 'prompt empty');
 		assert(
-			command.getOrAskForArg(argName2, askForArgMessage, true) == argVal2,
+			await command.getOrAskForArg({ name: argName2, askMessage: askForArgMessage }) ==
+				argVal2,
+			'prompt asking',
+		);
+		assert(
+			await command.getOrAskForArg({ name: argName2, askMessage: askForArgMessage }) ==
+				argVal3,
+			'prompt empty',
+		);
+		assert(
+			await command.getOrAskForArg({
+				name: argName2,
+				askMessage: askForArgMessage,
+				required: true,
+			}) == argVal2,
 			'prompt required argument',
 		);
 		promptStub.restore();

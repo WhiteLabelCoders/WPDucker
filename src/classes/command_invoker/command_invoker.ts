@@ -1,10 +1,11 @@
-import { isArray } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { logger } from '../../global/logger.ts';
-import { ensureExecutePermissions } from '../../utils/path/ensure_execute_permissions.ts';
+import { ensureExecutePermissions } from '../../utils/ensure_execute_permissions/ensure_execute_permissions.ts';
 import { pathExist } from '../../utils/path_exist/path_exist.ts';
 import { classCommand } from '../command/command.ts';
 import classDependencyChecker from '../dependency_checker/dependency_checker.ts';
-import { lodash as _ } from 'https://deno.land/x/deno_ts_lodash@0.0.1/mod.ts';
+import { _ } from '../../utils/lodash/lodash.ts';
 
 export class classCommandInvoker {
 	public outsourceTarget?: string[];
@@ -17,7 +18,7 @@ export class classCommandInvoker {
 	public setOutsourceTarget(target: string | string[]) {
 		logger.debugFn(arguments);
 
-		this.outsourceTarget = isArray(target) ? target : (target ? [target] : undefined);
+		this.outsourceTarget = _.isArray(target) ? target : (target ? [target] : undefined);
 		logger.debugVar('this.outsourceTarget', this.outsourceTarget);
 	}
 

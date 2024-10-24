@@ -1,5 +1,7 @@
-import { isArray } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
-import { ansiColors } from '../classes/logger/colors.ts';
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
+import { _ } from '../../utils/lodash/lodash.ts';
+import { ansiColors } from '../../classes/logger/colors.ts';
 
 const getLongestItem = (arr: string[]) => {
 	if (arr.length === 0) {
@@ -20,9 +22,9 @@ export const generateDocumentation = (
 	args: {
 		usage: string;
 		description: string;
-		commands: [string, string][];
-		arguments: [string, string][];
-		options: [string | string[], string][];
+		commands: string[][];
+		arguments: string[][];
+		options: (string | string[])[][];
 		colorTheme: {
 			heading: string;
 			key: string;
@@ -34,7 +36,7 @@ export const generateDocumentation = (
 	const requiredArgumentsLength =
 		getLongestItem(args.arguments.map((el) => el?.[0] || '')).length;
 	const requiredOptionLength = getLongestItem(args.options.map((el) => {
-		const elArray = isArray(el?.[0]) ? el?.[0] : [el?.[0] || ''];
+		const elArray = _.isArray(el?.[0]) ? el?.[0] : [el?.[0] || ''];
 		return elArray.join(', ');
 	})).length;
 	const usage =
@@ -67,7 +69,7 @@ export const generateDocumentation = (
 	}`;
 	const options = `${args.colorTheme.heading}Options:${ansiColors.Reset}\n${
 		args.options.map((opt) => {
-			const optArray = isArray(opt?.[0]) ? opt?.[0] : [opt?.[0] || ''];
+			const optArray = _.isArray(opt?.[0]) ? opt?.[0] : [opt?.[0] || ''];
 			const optString = optArray.map((optStr) =>
 				`${args.colorTheme.key}${optStr}${ansiColors.Reset}`
 			).join(', ');

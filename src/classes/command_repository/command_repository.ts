@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { logger } from '../../global/logger.ts';
 import { TCommandMeta } from '../command/command.d.ts';
 import { classCommand } from '../command/command.ts';
@@ -6,9 +8,9 @@ export class classCommandsRepository {
 	constructor() {
 		logger.debugFn(arguments);
 	}
-	public commands: TCommandMeta[] = [];
+	public commands: TCommandMeta<classCommand>[] = [];
 
-	public add(commandMeta: TCommandMeta) {
+	public add<T extends classCommand>(commandMeta: TCommandMeta<T>) {
 		logger.debugFn(arguments);
 
 		if (this.has(commandMeta.phrase)) {
@@ -19,16 +21,16 @@ export class classCommandsRepository {
 		logger.debugVar('this.commands', this.commands);
 	}
 
-	public get(phrase: string) {
+	public get<T extends classCommand>(phrase: string) {
 		logger.debugFn(arguments);
 
 		const found = this.commands.find((record) => record.phrase === phrase);
 		logger.debugVar('found', found);
 
-		return found;
+		return found as TCommandMeta<T>;
 	}
 
-	public has(commandPhrase: TCommandMeta['phrase']) {
+	public has<T extends classCommand>(commandPhrase: TCommandMeta<T>['phrase']) {
 		logger.debugFn(arguments);
 
 		const found = this.get(commandPhrase);

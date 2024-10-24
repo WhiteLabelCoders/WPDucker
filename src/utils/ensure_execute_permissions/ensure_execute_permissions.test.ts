@@ -1,4 +1,6 @@
-import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
+import { assert } from '@std/assert';
 import { noError } from '../no_error/no_error.ts';
 import { cwd } from '../cwd/cwd.ts';
 import { ensureExecutePermissions } from './ensure_execute_permissions.ts';

@@ -17,3 +17,6 @@
 /src/pre_compiled
 /VERSION
 /SECRET_KEY
+
+# husky
+/.husky

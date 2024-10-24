@@ -1,4 +1,6 @@
-import { assertEquals } from 'https://deno.land/std@0.201.0/assert/assert_equals.ts';
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
+import { assertEquals } from '@std/assert';
 import { pwd } from './pwd.ts';
 import { logger } from '../../global/logger.ts';
 import createProjectStructure from '../create_project_structure/create_project_structure.ts';

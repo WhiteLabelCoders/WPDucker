@@ -1,143 +1,262 @@
-import { assertEquals } from 'https://deno.land/std@0.201.0/assert/assert_equals.ts';
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { getError } from '../../utils/get_error/get_error.ts';
-import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
+import { assert } from '@std/assert';
 import { cwd } from '../../utils/cwd/cwd.ts';
 import { classDatabase } from './database.ts';
+import { pathExist } from '../../utils/path_exist/path_exist.ts';
+import { classDatabaseSqlLite } from '../database_sqllite/database_sqllite.ts';
+import { DB_SCHEMA } from '../../constants/DB_SCHEMA.ts';
+import { classDatabaseServer } from '../database_server/database_server.ts';
+import { _ } from '../../utils/lodash/lodash.ts';
+import { noError } from '../../utils/no_error/no_error.ts';
+import { getRandomId } from '../../utils/get_random_id/get_random_id.ts';
 
-Deno.test('classDatabase', async function testClassDatabase() {
+Deno.test('classDatabase', async function testClassDatabase(t) {
 	const testDir = `${cwd()}/test_classStore`;
+	const testSocket = `${testDir}/socket.sock`;
 
-	const store1 = new classDatabase({ dirname: testDir });
-	const store2 = new classDatabase({ dirname: testDir });
+	if (!await pathExist(testDir)) {
+		Deno.mkdirSync(testDir, { recursive: true });
+	}
 
-	await store1.init('customStore1');
-	await store2.init('customStore2');
+	const db = new classDatabaseSqlLite({
+		schema: DB_SCHEMA.json,
+		path: `${testDir}`,
+	});
 
-	const testStore = async (store: classDatabase, name: string) => {
-		const persistentCreatedAt = await store.getPersistentValue<number>('_createdAt');
-		const sessionCreatedAt = await store.getSessionValue<number>('_createdAt');
+	const dbServer = new classDatabaseServer({
+		unixSocket: testSocket,
+		sqlLiteDatabase: db,
+	});
 
-		assertEquals(persistentCreatedAt > 0, true, 'persistent created at');
-		assertEquals(sessionCreatedAt > 0, true, 'session created at');
+	await dbServer.start();
+	dbServer.listen();
 
-		const persistentTestKey = 'sample-test-key';
-		const persistentTestValue = 123;
+	const totalStores = 10;
+	const stores = new Array(totalStores).fill(0).map(() =>
+		new classDatabase({ dbSchema: DB_SCHEMA, dbServerSocketPath: testSocket })
+	);
 
-		await store.setPersistentValue(persistentTestKey, persistentTestValue);
+	await t.step('init', async function () {
+		const inits = [];
 
-		assertEquals(
-			await store.getPersistentValue(persistentTestKey) === persistentTestValue,
-			true,
-			'add persistent value',
-		);
+		for (const store of stores) {
+			inits.push(store.init());
+		}
 
-		const sessionTestKey = 'key-test-sample';
-		const sessionTestValue = 321;
+		await Promise.all(inits);
+	});
 
-		await store.setSessionValue(sessionTestKey, sessionTestValue);
+	await t.step('operations', async function () {
+		const operations = [];
 
-		assertEquals(
-			await store.getSessionValue(sessionTestKey) === sessionTestValue,
-			true,
-			'add session value',
-		);
+		for (const store of stores) {
+			const test = async () => {
+				const sessionCreatedAt = await store.getSessionCreatedAt();
 
-		await store.removePersistentKey(persistentTestKey);
+				assert(_.isNumber(sessionCreatedAt), 'session created at');
 
-		assertEquals(
-			await store.getPersistentValue(persistentTestKey) === undefined,
-			true,
-			'remove persistent value',
-		);
+				const persistentTestKey = `sample-test-key-${getRandomId(8)}`;
+				const persistentTestValue = 123;
+				const testKey = `test-key-${getRandomId(8)}`;
+				const testValue = `test-value-${getRandomId(8)}`;
+				const sessionTestKey = `sample-test-key-${getRandomId(12)}`;
+				const sessionTestValue = 321;
 
-		await store.removeSessionKey(sessionTestKey);
+				assert(
+					await noError(
+						async () => {
+							await store.setPersistentValue(persistentTestKey, persistentTestValue);
+						},
+					),
+					'set persistent value',
+				);
 
-		assertEquals(
-			await store.getSessionValue(sessionTestKey) === undefined,
-			true,
-			'remove session value',
-		);
+				assert(
+					(await store.getPersistentValue(persistentTestKey))?.value ===
+						persistentTestValue,
+					'check persistent value',
+				);
 
-		assertEquals((await store.getSessionValue<string>('_id')).length > 0, true, 'session id');
+				assert(
+					await noError(
+						async () => {
+							await store.setSessionValue(sessionTestKey, sessionTestValue);
+						},
+					),
+					'set session value',
+				);
 
-		await store.destroySession();
+				assert(
+					(await store.getSessionValue(sessionTestKey))?.value === sessionTestValue,
+					'add session value',
+				);
 
-		assert(
-			(await getError<string>(async () => await store.getSessionValue())).length > 0,
-			'try to get session value from destroyed session',
-		);
+				await store.removePersistentKey(persistentTestKey);
 
-		assert(
-			(await getError<string>(async () => await store.clearPersistent())).length > 0,
-			'try to clear persistent data from destroyed session',
-		);
+				assert(
+					(await store.getPersistentValue(persistentTestKey))?.value === undefined,
+					'remove persistent value',
+				);
 
-		assert(
-			(await getError<string>(async () => await store.getPersistentValue('_createdAt')))
-				.length > 0,
-			'try to get persistent data from destroyed session',
-		);
+				await store.removeSessionKey(sessionTestKey);
 
-		assert(
-			(await getError<string>(async () => await store.deleteAll()))
-				.length > 0,
-			'try to delete all data from destroyed session',
-		);
+				assert(
+					(await store.getSessionValue(sessionTestKey))?.value === undefined,
+					'remove session value',
+				);
 
-		const testKey = 'test-key';
-		const testValue = 'test-value';
+				assert(
+					await noError(async () => {
+						await store.setSessionValue(testKey, testValue);
+					}),
+					'try to set session value',
+				);
 
-		assert(
-			(await getError<string>(async () => await store.destroySession()))
-				.length > 0,
-			'try to destroy session from destroyed session',
-		);
+				const sessionValues = await store.getAllSessionValues();
+				const sessionUpdatedTestValue = `updated-${getRandomId(8)}`;
 
-		assert(
-			(await getError<string>(async () => await store.clearPersistent()))
-				.length > 0,
-			'try to clear persistent data from destroyed session',
-		);
+				assert(
+					await noError(async () => {
+						await store.setSessionValue(testKey, sessionUpdatedTestValue);
+					}),
+					'update session value',
+				);
 
-		assert(
-			(await getError<string>(async () => await store.getPersistentValue()))
-				.length > 0,
-			'try to get persistent data from destroyed session',
-		);
+				const sessionValuesAfterUpdate = await store.getAllSessionValues();
 
-		assert(
-			(await getError<string>(async () => await store.getSessionValue()))
-				.length > 0,
-			'try to get session data from destroyed session',
-		);
+				assert(
+					sessionValues.length === sessionValuesAfterUpdate.length,
+					'check session values length',
+				);
 
-		assert(
-			(await getError<string>(async () => await store.removePersistentKey(testKey)))
-				.length > 0,
-			'try to remove persistent key from destroyed session',
-		);
+				assert(
+					(await store.getSessionValue(testKey))?.value === sessionUpdatedTestValue,
+					'check updated session value',
+				);
 
-		assert(
-			(await getError<string>(async () => await store.removeSessionKey(testKey)))
-				.length > 0,
-			'try to remove session key from destroyed session',
-		);
+				assert(store.sessionId, 'session id');
 
-		assert(
-			(await getError<string>(async () => await store.setPersistentValue(testKey, testValue)))
-				.length > 0,
-			'try to set persistent value to destroyed session',
-		);
+				assert(
+					await noError(
+						async () => {
+							await store.destroySession();
+						},
+					),
+					'try to destroy session',
+				);
 
-		assert(
-			(await getError<string>(async () => await store.setSessionValue(testKey, testValue)))
-				.length > 0,
-			'try to set session value to destroyed session',
-		);
-	};
+				assert(!store.sessionId, 'session id');
 
-	await testStore(store1, 'store1');
-	await testStore(store2, 'store2');
+				assert(
+					(await getError<string>(async () => await store.getAllSessionValues())).length >
+						0,
+					'try to get session value from destroyed session',
+				);
 
-	Deno.removeSync(testDir, { recursive: true });
+				assert(
+					await noError(
+						async () => {
+							await store.clearPersistentData();
+						},
+					),
+					'try to clear persistent data without initialized session',
+				);
+
+				assert(
+					await noError(async () => {
+						await store.getPersistentValue(persistentTestKey);
+					}),
+					'try to get persistent data without initialized session',
+				);
+
+				assert(
+					await noError(async () => {
+						await store.destroySession();
+					}),
+					'try to destroy session from destroyed session',
+				);
+
+				assert(
+					await noError(async () => {
+						await store.removePersistentKey(testKey);
+					}),
+					'try to remove persistent key from destroyed session',
+				);
+
+				assert(
+					(await getError<string>(async () => await store.removeSessionKey(testKey)))
+						?.length > 0,
+					'try to remove session key from destroyed session',
+				);
+
+				assert(
+					await noError(async () => {
+						await store.setPersistentValue(testKey, testValue);
+					}),
+					'try to set persistent value to destroyed session',
+				);
+
+				const persistentValues = await store.getAllPersistentValues();
+				const updatedTestValue = `updated-${getRandomId(8)}`;
+
+				assert(
+					await noError(async () => {
+						await store.setPersistentValue(testKey, updatedTestValue);
+					}),
+					'update persistent value',
+				);
+
+				const persistentValuesAfterUpdate = await store.getAllPersistentValues();
+
+				assert(
+					persistentValues.length === persistentValuesAfterUpdate.length,
+					'check persistent values length',
+				);
+
+				assert(
+					(await store.getPersistentValue(testKey))?.value === updatedTestValue,
+					'check updated persistent value',
+				);
+
+				assert(
+					(await getError<string>(async () =>
+						await store.setSessionValue(testKey, testValue)
+					))
+						?.length > 0,
+					'try to set session value to destroyed session',
+				);
+
+				assert(
+					await noError(
+						async () => {
+							await store.init();
+						},
+					),
+					'try to init session',
+				);
+			};
+
+			operations.push(test());
+		}
+
+		await Promise.all(operations);
+	});
+
+	await t.step('destroy', async function () {
+		const destroys = [];
+
+		for (const store of stores) {
+			destroys.push(store.destroySession());
+		}
+
+		await Promise.all(destroys);
+	});
+
+	await dbServer.stop();
+
+	if (await pathExist(testDir)) {
+		Deno.removeSync(testDir, { recursive: true });
+	}
 });

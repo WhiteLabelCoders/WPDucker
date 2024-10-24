@@ -1,7 +1,9 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { ansiColors } from './colors.ts';
 import { getCallingFunctionName } from '../../utils/calling_function_name/calling_function_name.ts';
 import { formatDate } from '../../utils/format_date/format_date.ts';
-import { isString } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
+import { _ } from '../../utils/lodash/lodash.ts';
 import { secretKey } from '../../pre_compiled/__secret_key.ts';
 import { generateCrptoKey } from '../../utils/generate_crypto_key/generate_crypto_key.ts';
 
@@ -97,11 +99,12 @@ export class classLogger {
 	 * @param {string} message - A string representing the log message.
 	 * @returns An object with the properties "message" and "logType".
 	 */
+	// deno-lint-ignore no-explicit-any
 	public getLogLine(logType: string, data: any[]) {
 		const message = data.map((v) => {
 			let value = JSON.stringify(v);
 
-			if (!isString(value)) {
+			if (!_.isString(value)) {
 				return value;
 			}
 
@@ -132,8 +135,10 @@ export class classLogger {
 	 * of the log message.
 	 */
 	public primaryLogFunction(
+		// deno-lint-ignore no-explicit-any
 		data: any[],
 		logType: string,
+		// deno-lint-ignore no-explicit-any
 		callback: (...data: any[]) => void,
 	) {
 		data = this.hashSecrets(data);
@@ -153,7 +158,7 @@ export class classLogger {
 		const extraDebugMsg = debug ? ` ${getCallingFunctionName()}(...):` : '';
 		const extraDebugMsgColor = ansiColors.Dim;
 
-		data = this.truncateLogData(data);
+		data = debug ? data : this.truncateLogData(data);
 
 		const coloredText = [
 			`${
@@ -173,9 +178,22 @@ export class classLogger {
 		!omitDebug && callback(...coloredText);
 	}
 
+	/**
+	 * The `truncateLogData` function in TypeScript truncates strings in an array to a maximum length of
+	 * 200 characters.
+	 * @param {any[]} data - The `truncateLogData` function takes an array of any type of data as input
+	 * and truncates any string elements in the array to a maximum length of 200 characters. If a string
+	 * element exceeds 200 characters, it will be truncated to 197 characters and appended with ellipsis
+	 * ("...").
+	 * @returns The `truncateLogData` function takes an array of data and truncates any string elements in
+	 * the array to a maximum length of 200 characters. If a string element is longer than 200 characters,
+	 * it will be truncated to 197 characters followed by "...". The function then returns the modified
+	 * array with the truncated string elements.
+	 */
+	// deno-lint-ignore no-explicit-any
 	public truncateLogData(data: any[]) {
 		return data.map((d) => {
-			if (isString(d)) {
+			if (_.isString(d)) {
 				d = d.length <= 200 ? d : `${d.slice(0, 197)}...`;
 			}
 
@@ -183,11 +201,23 @@ export class classLogger {
 		});
 	}
 
+	/**
+	 * The `hashSecrets` function takes an array of data, replaces any secrets with asterisks, and returns
+	 * the modified data array.
+	 * @param {any[]} data - The `hashSecrets` function takes an array of data as input and replaces any
+	 * secrets found in the data with asterisks. It first checks if the data contains any secrets by
+	 * comparing it with a list of secrets obtained from the `getSecrets` method. If a secret is found, it
+	 * @returns The `hashSecrets` function takes an array of data as input, checks for any secrets in the
+	 * data, and replaces them with asterisks. If the data is a string, the function returns the hashed
+	 * string. If the data is a JSON object, it parses the hashed string and returns the parsed object. If
+	 * the data does not contain any secrets, it returns the original data.
+	 */
+	// deno-lint-ignore no-explicit-any
 	public hashSecrets(data: any[]) {
 		const secrets = this.getSecrets();
 
 		return data.map((d) => {
-			const stringifed: string = isString(d) ? d : JSON.stringify(d);
+			const stringifed: string = _.isString(d) ? d : JSON.stringify(d);
 
 			if (!this.stringContainsSecret(stringifed)) {
 				return d;
@@ -200,7 +230,7 @@ export class classLogger {
 				hashed = hashed.replaceAll(secret, new Array(secret.length).fill('*').join(''));
 			}
 
-			if (isString(d)) {
+			if (_.isString(d)) {
 				return hashed;
 			}
 
@@ -214,6 +244,12 @@ export class classLogger {
 		});
 	}
 
+	/**
+	 * The getSecrets function returns an array containing a secret key and a cryptographic key generated
+	 * from the secret key.
+	 * @returns The `getSecrets` function is returning an array containing the `secretKey` and the result
+	 * of calling the `generateCrptoKey` function with the `secretKey` as an argument.
+	 */
 	public getSecrets() {
 		return [
 			secretKey,
@@ -221,6 +257,13 @@ export class classLogger {
 		];
 	}
 
+	/**
+	 * The function checks if a given string contains any secrets from a list of secrets.
+	 * @param {string} x - The `x` parameter in the `stringContainsSecret` function is a string that
+	 * represents the text to be checked for the presence of any secrets.
+	 * @returns The `stringContainsSecret` function returns a boolean value - `true` if the input string
+	 * `x` contains any of the secrets obtained from `this.getSecrets()`, otherwise it returns `false`.
+	 */
 	public stringContainsSecret(x: string) {
 		const secrets = this.getSecrets();
 
@@ -271,6 +314,7 @@ export class classLogger {
 	 * @param {string} message - The parameter "message" is of type string. It is used to pass a message
 	 * that will be logged.
 	 */
+	// deno-lint-ignore no-explicit-any
 	public log(...data: any[]) {
 		this.primaryLogFunction(data, 'log', console.log);
 	}
@@ -280,6 +324,7 @@ export class classLogger {
 	 * @param {string} message - The parameter "message" is of type string. It is used to pass a message
 	 * that will be logged as an information message.
 	 */
+	// deno-lint-ignore no-explicit-any
 	public info(...data: any[]) {
 		this.primaryLogFunction(data, 'info', console.log);
 	}
@@ -289,6 +334,7 @@ export class classLogger {
 	 * @param {string} message - The parameter "message" is of type string. It is used to pass a debug
 	 * message that needs to be logged or displayed for debugging purposes.
 	 */
+	// deno-lint-ignore no-explicit-any
 	public debug(...data: any[]) {
 		this.primaryLogFunction(data, 'debug', console.debug);
 	}
@@ -303,6 +349,7 @@ export class classLogger {
 	 * number of arguments as an array. In this case, it allows you to pass multiple values of any type as
 	 * arguments when
 	 */
+	// deno-lint-ignore no-explicit-any
 	public debugVar(name: string, ...data: any[]) {
 		this.primaryLogFunction([`Var "${name}":`, ...data], 'debugVar', console.debug);
 	}
@@ -324,6 +371,7 @@ export class classLogger {
 	 * @param {string} message - The parameter "message" is a string that represents the success message
 	 * that you want to log.
 	 */
+	// deno-lint-ignore no-explicit-any
 	public success(...data: any[]) {
 		this.primaryLogFunction(data, 'success', console.log);
 	}
@@ -333,6 +381,7 @@ export class classLogger {
 	 * @param {string} message - The parameter "message" is of type string and represents the error
 	 * message that you want to log.
 	 */
+	// deno-lint-ignore no-explicit-any
 	public error(...data: any[]) {
 		this.primaryLogFunction(data, 'error', console.error);
 	}

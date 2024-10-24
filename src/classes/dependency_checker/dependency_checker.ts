@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { logger } from '../../global/logger.ts';
 
 export default class classDependencyChecker {
@@ -126,7 +128,8 @@ export default class classDependencyChecker {
 				(new Deno.Command(cmd, { args })).outputSync().stdout,
 			);
 			logger.debugVar('executionResult', executionResult);
-		} catch ({ message }) {
+		} catch (error) {
+			const { message } = error as Error;
 			logger.debug('Error during execution', message);
 			return false;
 		}

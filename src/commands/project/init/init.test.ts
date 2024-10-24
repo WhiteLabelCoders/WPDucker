@@ -1,11 +1,13 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { parseCliArgs } from '../../../utils/parser/parser.ts';
-import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
+import { assert } from '@std/assert';
 import { noError } from '../../../utils/no_error/no_error.ts';
 import { COMMANDS_META } from '../../../pre_compiled/__commands_meta.ts';
 import _commandMeta from './init.ts';
 import { generateUniqueBasename } from '../../../utils/generate_unique_basename/generate_unique_basename.ts';
 import { cwd } from '../../../utils/cwd/cwd.ts';
-import { isString, isUndefined } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
+import { _ } from '../../../utils/lodash/lodash.ts';
 import { loopOnProjectStructure } from '../../../utils/loop_on_project_structure/loop_on_project_structure.ts';
 import { CLI_PROJECT_STRUCTURE } from '../../../constants/CLI_PROJECT_STRUCTURE.ts';
 import { logger } from '../../../global/logger.ts';
@@ -66,7 +68,7 @@ Deno.test('commandProjectInit', async function testCommandProjectInit(t) {
 			assert(await noError(async () => await command._exec()), 'Check command execution');
 			Deno.chdir(`${testDir}`);
 			assert(
-				isString(await getError<string>(async () => await command._exec())) === true,
+				_.isString(await getError<string>(async () => await command._exec())) === true,
 				'Check command execution Error',
 			);
 			assert(await pathExist(`${testDir}/${projectName}`) === true, 'Check project path');
@@ -92,7 +94,7 @@ Deno.test('commandProjectInit', async function testCommandProjectInit(t) {
 	Deno.chdir(`${testDir}/../`);
 	await Deno.remove(testDir, { recursive: true });
 
-	if (!isUndefined(error)) {
+	if (!_.isUndefined(error)) {
 		throw error;
 	}
 });

@@ -1,4 +1,6 @@
-import { assertEquals } from 'https://deno.land/std@0.201.0/assert/assert_equals.ts';
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
+import { assertEquals } from '@std/assert';
 import { generateUniqueBasename } from '../generate_unique_basename/generate_unique_basename.ts';
 import { cwd } from '../cwd/cwd.ts';
 import { getCliVersionRequiredByProject } from './get_cli_version_required_by_project.ts';

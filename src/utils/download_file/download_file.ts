@@ -1,5 +1,8 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { pathExist } from '../path_exist/path_exist.ts';
 import { logger } from '../../global/logger.ts';
+import { default as classProgressBar } from 'https://deno.land/x/progress@v1.4.9/mod.ts';
 
 /**
  * The `downloadFile` function is a TypeScript function that downloads a file from a given URL, saves
@@ -53,10 +56,7 @@ export async function downloadFile(
 	let downloadedBytes = 0;
 	logger.debugVar('downloadedBytes', downloadedBytes);
 
-	const classProgressBar = await import('https://deno.land/x/progress@v1.3.9/mod.ts');
-	logger.debugVar('classProgressBar', classProgressBar);
-
-	const progressBar = new classProgressBar.default({
+	const progressBar = new classProgressBar({
 		total: 100,
 		interval: 15,
 		width: 10,

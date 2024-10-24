@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 /**
  * The getRandomId function generates a random string of characters with a specified length.
  * @param {number} idLength - The `idLength` parameter is the desired length of the random ID that will

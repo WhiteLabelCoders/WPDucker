@@ -1,13 +1,15 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { logger } from '../../global/logger.ts';
 import { cwd } from '../../utils/cwd/cwd.ts';
 import { getDbForTests } from '../../utils/get_db_for_tests/get_db_for_tests.ts';
+import { getGhApiClientForTests } from '../../utils/get_gh_api_client_for_tests/get_gh_api_client_for_tests.ts';
 import { parseCliArgs } from '../../utils/parser/parser.ts';
 import { classCliVersionManager } from '../cli_version_manager/cli_version_manager.ts';
 import { TCommandArgs } from '../command/command.d.ts';
 import { classCommand } from '../command/command.ts';
 import { classCommandInvoker } from '../command_invoker/command_invoker.ts';
 import { classCommandsRepository } from '../command_repository/command_repository.ts';
-import { classGitHubApiClient } from '../github/gh_api_client.ts';
 import { classCommandInvokerFacade } from './command_invoker_facade.ts';
 
 Deno.test('classCommandInvokerFacade', async function testClassCommandInvokerFacade() {
@@ -27,15 +29,9 @@ Deno.test('classCommandInvokerFacade', async function testClassCommandInvokerFac
 
 	const tmpDir = testData.dir.cli.tmp;
 	const commandArguments = parseCliArgs(['./', '--debug']);
-	const database = await getDbForTests();
-	const gitHubApiClient = new classGitHubApiClient({
-		github: {
-			owner: 'WhiteLabelCoders',
-			repo: 'WPDucker',
-			apiUrl: 'https://api.github.com',
-		},
-		database,
-	});
+	const { database, server } = await getDbForTests();
+
+	const gitHubApiClient = getGhApiClientForTests(database);
 	const cliVersionManager = new classCliVersionManager({
 		cliDir: testData.dir.cli,
 		gitHubApiClient,
@@ -64,6 +60,7 @@ Deno.test('classCommandInvokerFacade', async function testClassCommandInvokerFac
 
 	commandInvokerFacade.addCommand({
 		phrase: '',
+		description: '',
 		class: myClassCommand,
 	});
 
@@ -79,6 +76,8 @@ Deno.test('classCommandInvokerFacade', async function testClassCommandInvokerFac
 
 	await commandInvokerFacade.exec();
 	await commandInvokerFacade.destroy();
+	await database.destroySession();
+	await server.stop();
 
 	await Deno.remove(testDir, { recursive: true });
 });

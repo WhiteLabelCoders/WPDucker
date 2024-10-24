@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { generateSecretKey } from './generate_secret_key.ts';
 
 const CWD = Deno.cwd();

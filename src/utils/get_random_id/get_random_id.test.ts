@@ -1,4 +1,6 @@
-import { assertEquals } from 'https://deno.land/std@0.201.0/assert/assert_equals.ts';
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
+import { assertEquals } from '@std/assert';
 import { getRandomId } from './get_random_id.ts';
 
 Deno.test('getRandomId', function testGetRandomId() {

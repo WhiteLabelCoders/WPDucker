@@ -1,11 +1,13 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { parseCliArgs } from '../../../utils/parser/parser.ts';
-import { assert } from 'https://deno.land/std@0.162.0/_util/assert.ts';
+import { assert } from '@std/assert';
 import { noError } from '../../../utils/no_error/no_error.ts';
 import { COMMANDS_META } from '../../../pre_compiled/__commands_meta.ts';
 import _commandMeta from './remove.ts';
 import { generateUniqueBasename } from '../../../utils/generate_unique_basename/generate_unique_basename.ts';
 import { cwd } from '../../../utils/cwd/cwd.ts';
-import { isUndefined } from 'https://cdn.skypack.dev/lodash-es@4.17.21';
+import { _ } from '../../../utils/lodash/lodash.ts';
 import createProjectStructure from '../../../utils/create_project_structure/create_project_structure.ts';
 import { CLI_PROJECT_STRUCTURE } from '../../../constants/CLI_PROJECT_STRUCTURE.ts';
 import { pathExist } from '../../../utils/path_exist/path_exist.ts';
@@ -81,9 +83,14 @@ Deno.test('commandProjectRemove', async function testCommandProjectRemove(t) {
 
 			const userInput = testDir;
 			command.askForArg.bind(command);
-			command.askForArg = (_message: string, _required: boolean, defaultValue?: string) => {
-				if (defaultValue) {
-					return defaultValue;
+			command.askForArg = async (args: {
+				message: string;
+				required: boolean;
+				defaultValue: string;
+				validator?: (value: string) => true | string;
+			}) => {
+				if (args.defaultValue) {
+					return args.defaultValue;
 				}
 				return userInput;
 			};
@@ -103,7 +110,7 @@ Deno.test('commandProjectRemove', async function testCommandProjectRemove(t) {
 		await Deno.remove(testDir, { recursive: true });
 	}
 
-	if (!isUndefined(error)) {
+	if (!_.isUndefined(error)) {
 		throw error;
 	}
 });

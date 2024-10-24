@@ -1,7 +1,9 @@
-import { DOCUMENTATION_COLOR_THEME } from '../../../constants/DOCUMENTATION_COLOR_THEME.ts';
-import { generateDocumentation } from '../../../utils/generate_documentation.ts';
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
-const feedOptions: [string | string[], string][] = [
+import { DOCUMENTATION_COLOR_THEME } from '../../../constants/DOCUMENTATION_COLOR_THEME.ts';
+import { generateDocumentation } from '../../../utils/generate_documentation/generate_documentation.ts';
+
+const feedOptions = [
   [['-f', '--force'], 'Force execution'],
   [['-h', '--help'], 'Display documentation'],
   [['-dbg', '--debug'], 'Display debug logs'],

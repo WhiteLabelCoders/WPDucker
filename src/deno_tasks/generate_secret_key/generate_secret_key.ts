@@ -1,3 +1,5 @@
+// Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
+
 import { pathExist } from '../../utils/path_exist/path_exist.ts';
 import { getRandomId } from '../../utils/get_random_id/get_random_id.ts';
 
