@@ -1,20 +1,11 @@
 // Copyright 2023-2024 the WPDucker authors. All rights reserved. MIT license.
 
 import { _ } from '../utils/lodash/lodash.ts';
+import { pathExistSync } from '../utils/path_exist/path_exist.ts';
 
 const watcher = Deno.watchFs(['src']);
 
 const delay = 50;
-
-const pathExist = (path: string) => {
-	try {
-		Deno.statSync(path);
-
-		return true;
-	} catch {
-		return false;
-	}
-};
 
 const runTestFile = async (filename: string) => {
 	const preCmd = new Deno.Command(Deno.execPath(), {
@@ -61,7 +52,7 @@ const dispatchEvent = _.debounce(async (event: Deno.FsEvent) => {
 		const testFile = `${dirname}/${basename.split('.').at(0)}.test.ts`;
 		const definitionFile = `${dirname}/${basename.split('.').at(0)}.ts`;
 
-		if (pathExist(testFile)) {
+		if (pathExistSync(testFile)) {
 			console.clear();
 			console.error(`Run test file!`, testFile);
 			await runTestFile(testFile);

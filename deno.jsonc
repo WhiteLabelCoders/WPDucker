@@ -47,6 +47,7 @@
 	},
 	"imports": {
 		"@commitlint/config-conventional": "npm:@commitlint/config-conventional@^19.2.2",
+		"@std/fs": "jsr:@std/fs@^1.0.5",
 		"conventional-changelog-conventionalcommits": "npm:conventional-changelog-conventionalcommits@^8.0.0"
 	}
 }
