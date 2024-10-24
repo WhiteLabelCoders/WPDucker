@@ -9,6 +9,7 @@ export type TCommandArgs = {
 
 export type TCommandMeta<T> = {
 	phrase: string;
+	description: string;
 	documentation?: string;
 	class: new (args: TCommandArgs) => T;
 };

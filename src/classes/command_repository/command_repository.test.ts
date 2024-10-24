@@ -14,9 +14,11 @@ Deno.test('classCommand', function testClassCommand() {
 	}
 
 	const testCommandPhrase = 'My test command phrase';
+	const testCommandDescription = 'My test command description';
 	const commandClass = myCommand;
 	const commandMeta = {
 		phrase: testCommandPhrase,
+		description: testCommandDescription,
 		class: commandClass,
 	};
 	const commandRepo = new classCommandsRepository();

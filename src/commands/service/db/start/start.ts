@@ -7,7 +7,7 @@ import { DB_SERVER_SOCKET_PATH } from '../../../../constants/DB_SERVER_SOCKET_PA
 import { logger } from '../../../../global/logger.ts';
 import { createDatabaseServer } from '../../../../utils/create_database_server/create_database_server.ts';
 import { sleep } from '../../../../utils/sleep/sleep.ts';
-import { classCommandDbServiceStartDocs } from './start.docs.ts';
+import { classCommandDbServiceStartDocs, description } from './start.docs.ts';
 
 const phrase = 'service db start';
 
@@ -156,6 +156,7 @@ class classCommandDbServiceStart extends classCommand {
 
 const meta: TCommandMeta<classCommandDbServiceStart> = {
     phrase,
+    description,
     documentation: classCommandDbServiceStartDocs,
     class: classCommandDbServiceStart,
 };

@@ -9,7 +9,7 @@ import createProjectStructure from '../../../utils/create_project_structure/crea
 import { cwd } from '../../../utils/cwd/cwd.ts';
 import { generateUniqueBasename } from '../../../utils/generate_unique_basename/generate_unique_basename.ts';
 import { pathExist } from '../../../utils/path_exist/path_exist.ts';
-import { commandProjectInitDocs } from './init.docs.ts';
+import { commandProjectInitDocs, description } from './init.docs.ts';
 
 const phrase = 'project init';
 class classCommandProjectInit extends classCommand {
@@ -69,6 +69,7 @@ class classCommandProjectInit extends classCommand {
 
 const meta: TCommandMeta<classCommandProjectInit> = {
 	phrase,
+	description,
 	documentation: commandProjectInitDocs,
 	class: classCommandProjectInit,
 };

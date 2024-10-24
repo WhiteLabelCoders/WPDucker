@@ -6,7 +6,7 @@ import { logger } from '../../../global/logger.ts';
 import { generateUniqueBasename } from '../../../utils/generate_unique_basename/generate_unique_basename.ts';
 import { pathExist } from '../../../utils/path_exist/path_exist.ts';
 import { pwd } from '../../../utils/pwd/pwd.ts';
-import { commandProjectEnvAddDocs } from './env-add.docs.ts';
+import { commandProjectEnvAddDocs, description } from './env-add.docs.ts';
 
 const phrase = 'project env add';
 
@@ -65,6 +65,7 @@ class classCommandProjectEnvAdd extends classCommand {
 
 const meta: TCommandMeta<classCommandProjectEnvAdd> = {
 	phrase,
+	description,
 	documentation: commandProjectEnvAddDocs,
 	class: classCommandProjectEnvAdd,
 };

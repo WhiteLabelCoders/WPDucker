@@ -60,6 +60,7 @@ Deno.test('classCommandInvokerFacade', async function testClassCommandInvokerFac
 
 	commandInvokerFacade.addCommand({
 		phrase: '',
+		description: '',
 		class: myClassCommand,
 	});
 

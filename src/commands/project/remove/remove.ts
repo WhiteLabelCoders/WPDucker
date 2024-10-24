@@ -3,7 +3,7 @@
 import { TCommandArgs, TCommandMeta } from '../../../classes/command/command.d.ts';
 import { classCommand } from '../../../classes/command/command.ts';
 import { logger } from '../../../global/logger.ts';
-import { commandProjectRemoveDocs } from './remove.docs.ts';
+import { commandProjectRemoveDocs, description } from './remove.docs.ts';
 import { getBasename } from '../../../utils/get_basename/get_basename.ts';
 
 const phrase = 'project remove';
@@ -61,6 +61,7 @@ class classCommandProjectRemove extends classCommand {
 
 const meta: TCommandMeta<classCommandProjectRemove> = {
 	phrase,
+	description,
 	documentation: commandProjectRemoveDocs,
 	class: classCommandProjectRemove,
 };
